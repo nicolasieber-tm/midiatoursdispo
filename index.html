@@ -310,6 +310,42 @@ table.dispo th.today,table.dispo td.today{background:var(--accent-soft)}
 @media (max-width:860px){.cta{grid-template-columns:1fr}}
 footer{padding-block:28px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13px}
 .disclaimer{background:var(--accent-soft);border:1px solid var(--accent);padding:10px 14px;font-size:13px;margin-bottom:18px}
+.admin .side .dispo-btn{margin-top:8px;border-top:1px solid rgba(255,255,255,.15);padding-top:12px}
+.step-label{padding:8px 14px;font-size:13px;font-weight:600;background:var(--bg);border-bottom:1px solid var(--line)}
+.swipe-hint{display:none}
+@media (max-width:760px){
+  .stepper button{flex-direction:row;justify-content:center;padding:10px 0}
+  .stepper button .lbl{display:none}
+  .step-label[hidden]{display:block}
+  .swipe-hint{display:block;font-size:11.5px;color:var(--ink-3);padding:6px 12px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+  .admin .side .dispo-btn{margin-top:0;border-top:0;padding-top:7px}
+  .pane{padding:16px}
+  .veh{grid-template-columns:40px 1fr auto;gap:10px;padding:10px 12px}
+  .veh .ico{width:40px;height:28px}
+  .veh .cap .n{font-size:22px}
+  .adjust{grid-template-columns:1fr}
+  .doc{padding:18px 16px;font-size:13px}
+  .doc .dochead{flex-direction:column;gap:10px}
+  .doc .addr{text-align:left}
+  .doc .meta{grid-template-columns:1fr}
+  .doc h3{font-size:21px}
+  .statusbar{gap:6px 14px}
+  .roi{padding:16px}
+  .roi .result{padding:16px}
+  .roi .result .big{font-size:38px}
+  .roi .result .row .n{font-size:20px}
+  .roi .inputs label{flex-direction:column;align-items:flex-start;gap:2px}
+  .tiles{grid-template-columns:1fr 1fr;gap:8px}
+  .tile .n{font-size:22px}
+  .cta{padding:22px 18px}
+  .modal .mh{padding:14px 16px}.modal .mb{padding:14px 16px;gap:12px}.modal .mf{padding:12px 16px}
+  .modal .mh h4{font-size:20px}
+  .flow{padding:16px}
+  .flow h3{font-size:19px;flex-wrap:wrap}
+  header.hero{padding-block:32px 28px}
+  section{padding-block:36px}
+  h2{font-size:26px}
+}
 @media (prefers-reduced-motion:no-preference){.pane.active{animation:fade .18s ease-out}}
 @keyframes fade{from{opacity:.4}to{opacity:1}}
 </style>
@@ -396,6 +432,7 @@ footer{padding-block:28px;border-top:1px solid var(--line);color:var(--ink-3);fo
         <button data-step="4"><span class="n">4</span><span class="lbl">Offerte</span></button>
         <button data-step="5"><span class="n">5</span><span class="lbl">Auftrag &amp; Bexio</span></button>
       </div>
+      <div class="step-label" id="step-label" hidden></div>
 
       <!-- Step 1 -->
       <div class="pane active" data-pane="1">
@@ -544,7 +581,7 @@ footer{padding-block:28px;border-top:1px solid var(--line);color:var(--ink-3);fo
           <button data-apane="fahrzeuge">Fahrzeuge</button>
           <button data-apane="regeln">Preisregeln</button>
           <button data-apane="kunden">Kunden</button>
-          <button data-apane="dispo" style="margin-top:8px;border-top:1px solid rgba(255,255,255,.15);padding-top:12px">Disposition <span class="cnt" style="background:var(--accent);color:var(--accent-ink)">Stufe 2</span></button>
+          <button data-apane="dispo" class="dispo-btn">Disposition <span class="cnt" style="background:var(--accent);color:var(--accent-ink)">Stufe 2</span></button>
         </div>
         <div class="main">
           <div class="apane active" data-apane="anfragen">
@@ -555,7 +592,7 @@ footer{padding-block:28px;border-top:1px solid var(--line);color:var(--ink-3);fo
               <div class="tile"><div class="n mono">CHF 28’400</div><div class="l">Offertvolumen diese Woche</div></div>
             </div>
             <div class="top"><h4>Offene Anfragen</h4><div class="chips"><span class="chip">Alle</span><span class="chip">Neu</span><span class="chip">Offerte offen</span><span class="chip">Bestätigt</span></div></div>
-            <div class="tbl-wrap"><table class="tbl">
+            <div class="tbl-wrap"><div class="swipe-hint">Tabelle seitlich wischen</div><table class="tbl">
               <tr><th>Nr.</th><th>Kunde</th><th>Fahrt</th><th>Datum</th><th>Pers.</th><th>Fahrzeug</th><th>Preis</th><th>Quelle</th><th>Status</th></tr>
               <tr class="row" data-req='{"name": "Musikverein Harmonie Bern", "contact": "Peter Wyss, 079 000 00 00", "pax": 45, "from_": "Bern", "to": "Europa-Park", "date": "2026-10-17", "time": "07:00", "ret": 1, "source": "Telefon", "notes": "Konzertreise, Instrumente im Gepäckraum, WC im Bus gewünscht.", "wish": ""}'><td class="mono">A-1091</td><td>Musikverein Harmonie Bern</td><td>Bern → Europa-Park</td><td>17.10.</td><td class="num">45</td><td>S 416 GT-HD/2</td><td class="num">4’656</td><td>Telefon</td><td><span class="st-pill neu">Neu</span></td></tr>
               <tr class="row" data-req='{"name": "Primarschule Flawil", "contact": "Sekretariat, 071 000 00 00", "pax": 62, "from_": "Winterthur", "to": "Verkehrshaus Luzern", "date": "2026-10-02", "time": "08:00", "ret": 0, "source": "Webformular", "notes": "Schulreise 3 Klassen, 6 Begleitpersonen inbegriffen.", "wish": ""}'><td class="mono">A-1090</td><td>Primarschule Flawil</td><td>Flawil → Verkehrshaus Luzern</td><td>02.10.</td><td class="num">62</td><td>S 431 DT</td><td class="num">2’180</td><td>Webformular</td><td><span class="st-pill neu">Neu</span></td></tr>
@@ -569,7 +606,7 @@ footer{padding-block:28px;border-top:1px solid var(--line);color:var(--ink-3);fo
           </div>
           <div class="apane" data-apane="offerten">
             <div class="top"><h4>Offerten</h4></div>
-            <div class="tbl-wrap"><table class="tbl">
+            <div class="tbl-wrap"><div class="swipe-hint">Tabelle seitlich wischen</div><table class="tbl">
               <tr><th>Offerte</th><th>Kunde</th><th>Fahrt</th><th>Total</th><th>Gesendet</th><th>Gültig bis</th><th>Status</th></tr>
               <tr class="row"><td class="mono">OF-2026-1088</td><td>FC Uzwil Junioren</td><td>Uzwil → Allianz Arena</td><td class="num">3’420</td><td>–</td><td>–</td><td><span class="st-pill offen">Entwurf, Freigabe fehlt</span></td></tr>
               <tr class="row"><td class="mono">OF-2026-1087</td><td>Bühler AG</td><td>Uzwil → Säntis</td><td class="num">4’980</td><td>09.09.</td><td>09.10.</td><td><span class="st-pill gesendet">Gesendet, Erinnerung in 5 Tagen</span></td></tr>
@@ -579,7 +616,7 @@ footer{padding-block:28px;border-top:1px solid var(--line);color:var(--ink-3);fo
           </div>
           <div class="apane" data-apane="auftraege">
             <div class="top"><h4>Aufträge</h4></div>
-            <div class="tbl-wrap"><table class="tbl">
+            <div class="tbl-wrap"><div class="swipe-hint">Tabelle seitlich wischen</div><table class="tbl">
               <tr><th>Auftrag</th><th>Kunde</th><th>Fahrt</th><th>Datum</th><th>Fahrzeug</th><th>Fahrer</th><th>Bexio</th></tr>
               <tr class="row"><td class="mono">AU-2026-2255</td><td>Hotel Uzwil</td><td>Uzwil → Flughafen Zürich</td><td>15.09.</td><td>Sprinter Travel</td><td><span class="tag">Stufe 2</span></td><td><span class="st-pill bexio">Rechnung erstellt</span></td></tr>
               <tr class="row"><td class="mono">AU-2026-2254</td><td>Gemeinde Oberbüren</td><td>Oberbüren → Ballenberg</td><td>13.09.</td><td>S 517 HDH</td><td><span class="tag">Stufe 2</span></td><td><span class="st-pill bexio">Rechnung erstellt</span></td></tr>
@@ -588,7 +625,7 @@ footer{padding-block:28px;border-top:1px solid var(--line);color:var(--ink-3);fo
           </div>
           <div class="apane" data-apane="fahrzeuge">
             <div class="top"><h4>Flotte</h4><span class="tag accent">Tagespauschale hier ändern, die Demo rechnet sofort neu</span></div>
-            <div class="tbl-wrap"><table class="tbl" id="fleet-table"></table></div>
+            <div class="tbl-wrap"><div class="swipe-hint">Tabelle seitlich wischen</div><table class="tbl" id="fleet-table"></table></div>
             <p class="small muted" style="margin-top:10px">Das ist das Wissen, das heute im Kopf steckt: welches Fahrzeug wie viele Plätze hat, was es ausmacht und was es kostet. Hier gepflegt, für alle Mitarbeitenden gleich.</p>
           </div>
           <div class="apane" data-apane="regeln">
@@ -598,13 +635,13 @@ footer{padding-block:28px;border-top:1px solid var(--line);color:var(--ink-3);fo
           </div>
           <div class="apane" data-apane="dispo">
             <div class="top"><h4>Wochenplan Fahrzeuge, KW 38 (nächste Woche)</h4><span class="tag accent">Stufe 2, optional</span></div>
-            <div class="tbl-wrap"><table class="tbl dispo" id="dispo-table"></table></div>
+            <div class="tbl-wrap"><div class="swipe-hint">Tabelle seitlich wischen</div><table class="tbl dispo" id="dispo-table"></table></div>
             <div class="legend" style="margin-top:12px"><span><i style="background:var(--navy)"></i>Auftrag bestätigt</span><span><i style="background:var(--accent)"></i>Offerte offen, reserviert</span><span><i style="background:var(--bad)"></i>Wartung / nicht verfügbar</span><span><i style="background:var(--surface-2);border:1px solid var(--line-strong)"></i>frei</span></div>
             <p class="small muted" style="margin-top:12px">Mit Stufe 2 prüft der Fahrzeugvorschlag automatisch, ob der Bus am gewünschten Tag frei ist, und zeigt nur verfügbare Fahrzeuge. Fahrer werden dem Auftrag zugeteilt, Wartungsfenster blockieren das Fahrzeug. In Stufe 1 ist das nicht enthalten, die Verfügbarkeit prüft der Mitarbeiter wie heute.</p>
           </div>
           <div class="apane" data-apane="kunden">
             <div class="top"><h4>Kunden</h4></div>
-            <div class="tbl-wrap"><table class="tbl">
+            <div class="tbl-wrap"><div class="swipe-hint">Tabelle seitlich wischen</div><table class="tbl">
               <tr><th>Kunde</th><th>Kontakt</th><th>Fahrten</th><th>Letzte Fahrt</th><th>Umsatz 2026</th><th>Bexio</th></tr>
               <tr class="row"><td>Bühler AG</td><td>Personalabteilung</td><td class="num">6</td><td>19.09.</td><td class="num">21’300</td><td><span class="st-pill bexio">verknüpft</span></td></tr>
               <tr class="row"><td>Musikverein Harmonie Bern</td><td>Peter Wyss</td><td class="num">1</td><td>–</td><td class="num">–</td><td><span class="st-pill">wird angelegt</span></td></tr>
@@ -1120,6 +1157,7 @@ footer{padding-block:28px;border-top:1px solid var(--line);color:var(--ink-3);fo
     document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",+p.dataset.pane===n));
     maxDone=Math.max(maxDone,n);
     document.querySelectorAll("#stepper button").forEach(b=>{const s=+b.dataset.step;b.classList.toggle("active",s===n);b.classList.toggle("done",s<maxDone&&s!==n);});
+    const lbl=document.querySelector(`#stepper button[data-step="${n}"] .lbl`); el("step-label").textContent=`Schritt ${n} von 5: ${lbl?lbl.textContent:""}`;
     if(n===1) renderLive();
     if(n===2) renderVehicles();
     if(n===3) renderCalc();
@@ -1256,6 +1294,7 @@ footer{padding-block:28px;border-top:1px solid var(--line);color:var(--ink-3);fo
   }
   ["r-req","r-now","r-new","r-rate"].forEach(id=>el(id).addEventListener("input",roi)); roi();
 
+  el("step-label").textContent="Schritt 1 von 5: Anfrage erfassen";
   renderLive();
 })();
 </script>
