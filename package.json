@@ -1,0 +1,8 @@
+{
+  "name": "midiatoursdispo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Konzeptvorschau Dispo-Assistent für Midia Tours",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" }
+}

@@ -1,0 +1,1262 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body>
+<title>Midia Tours Dispo-Assistent</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --surface-2:#E9EDF3; --line:#D3DAE4; --line-strong:#B7C1CF;
+  --ink:#16213A; --ink-2:#4A5568; --ink-3:#7A8699;
+  --navy:#1B2F5C; --navy-ink:#FFFFFF;
+  --accent:#E0961A; --accent-ink:#1A1200; --accent-soft:#FBEFD6;
+  --ok:#1F8A4C; --ok-soft:#DDF3E5; --warn:#B8621B; --warn-soft:#FBE8D6; --bad:#B23A3A; --bad-soft:#F7DEDE;
+  --today:#9AA3B2; --shadow:0 10px 30px rgba(22,33,58,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1524; --surface:#171F33; --surface-2:#1F2940; --line:#2C3752; --line-strong:#3E4B69;
+    --ink:#EEF1F7; --ink-2:#B4BDCD; --ink-3:#7F8AA1;
+    --navy:#243D75; --navy-ink:#FFFFFF;
+    --accent:#F0B24A; --accent-ink:#1A1200; --accent-soft:#3A2E14;
+    --ok:#5CCB8A; --ok-soft:#153A26; --warn:#F0A05A; --warn-soft:#3F2A14; --bad:#F08A8A; --bad-soft:#42201F;
+    --today:#5C6577; --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1524; --surface:#171F33; --surface-2:#1F2940; --line:#2C3752; --line-strong:#3E4B69;
+  --ink:#EEF1F7; --ink-2:#B4BDCD; --ink-3:#7F8AA1;
+  --navy:#243D75; --navy-ink:#FFFFFF;
+  --accent:#F0B24A; --accent-ink:#1A1200; --accent-soft:#3A2E14;
+  --ok:#5CCB8A; --ok-soft:#153A26; --warn:#F0A05A; --warn-soft:#3F2A14; --bad:#F08A8A; --bad-soft:#42201F;
+  --today:#5C6577; --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.55;padding-block:0;padding-inline:0}
+h1,h2,h3,h4{font-family:"Barlow Condensed","Arial Narrow",Impact,sans-serif;text-wrap:balance;margin:0;line-height:1.05}
+h1{font-size:clamp(38px,6vw,64px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:clamp(28px,3.6vw,38px);font-weight:600}
+h3{font-size:22px;font-weight:600}
+h4{font-size:17px;font-weight:600;font-family:"IBM Plex Sans",system-ui,sans-serif}
+p{margin:0}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px}
+.muted{color:var(--ink-2)}
+.small{font-size:13px}
+.tag{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.04em;padding:3px 9px;border-radius:999px;background:var(--surface-2);color:var(--ink-2)}
+.tag.ok{background:var(--ok-soft);color:var(--ok)}
+.tag.warn{background:var(--warn-soft);color:var(--warn)}
+.tag.bad{background:var(--bad-soft);color:var(--bad)}
+.tag.accent{background:var(--accent-soft);color:var(--accent-ink)}
+:root[data-theme="dark"] .tag.accent{color:var(--accent)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tag.accent{color:var(--accent)}}
+
+/* nav */
+nav{position:sticky;top:0;z-index:20;background:var(--navy);color:var(--navy-ink)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:54px;flex-wrap:wrap;padding-block:6px}
+nav .brand{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:20px;letter-spacing:.02em;display:flex;align-items:center;gap:10px}
+nav .brand span{font-family:"IBM Plex Sans",sans-serif;font-weight:400;font-size:12px;opacity:.75;letter-spacing:.08em;text-transform:uppercase}
+nav ul{list-style:none;margin:0;padding:0;display:flex;gap:4px;flex-wrap:wrap}
+nav a{color:var(--navy-ink);text-decoration:none;font-size:13.5px;padding:6px 10px;border-radius:6px;opacity:.85}
+nav a:hover,nav a:focus-visible{opacity:1;background:rgba(255,255,255,.12);outline:none}
+@media (max-width:760px){nav{position:static}nav ul{display:none}nav .brand{flex-wrap:wrap;font-size:18px}form.intake{grid-template-columns:1fr}}
+
+/* hero */
+header.hero{padding-block:56px 40px;border-bottom:1px solid var(--line)}
+header.hero .wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:40px;align-items:center}
+header.hero .lead{font-size:18px;max-width:58ch;color:var(--ink-2);margin-top:18px}
+.pitch{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--accent);padding:20px 22px;box-shadow:var(--shadow)}
+.pitch p:first-child{font-family:"Barlow Condensed",sans-serif;font-size:24px;line-height:1.15;font-weight:600}
+.pitch p+p{margin-top:8px;color:var(--ink-2)}
+@media (max-width:820px){header.hero .wrap{grid-template-columns:1fr}}
+
+section{padding-block:56px}
+section+section{border-top:1px solid var(--line)}
+.sec-head{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:28px;max-width:70ch}
+
+/* flow comparison */
+.flows{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.flow{background:var(--surface);border:1px solid var(--line);padding:22px}
+.flow.today{border-style:dashed}
+.flow.future{border-color:var(--navy);box-shadow:var(--shadow)}
+.flow h3{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.steps li{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start;padding-block:9px;position:relative}
+.steps li+li::before{content:"";position:absolute;left:13px;top:-9px;height:18px;border-left:2px solid var(--line-strong)}
+.steps .dot{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:600;font-family:"IBM Plex Mono",monospace;background:var(--surface-2);color:var(--ink-2)}
+.flow.future .dot.auto{background:var(--navy);color:var(--navy-ink)}
+.flow.future .dot.human{background:var(--accent);color:var(--accent-ink)}
+.flow.today .dot.head{background:var(--bad-soft);color:var(--bad)}
+.steps b{display:block;font-weight:600}
+.steps span{color:var(--ink-2);font-size:13.5px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:13px;color:var(--ink-2)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:6px}
+@media (max-width:820px){.flows{grid-template-columns:1fr}}
+
+/* demo app */
+.app{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);overflow:hidden}
+.app-bar{background:var(--surface-2);border-bottom:1px solid var(--line);padding:10px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.app-bar .dots{display:flex;gap:6px}.app-bar .dots i{width:10px;height:10px;border-radius:50%;background:var(--line-strong);display:block}
+.app-bar .title{font-weight:600;font-size:14px}
+.app-bar .note{margin-left:auto;font-size:12.5px;color:var(--ink-3)}
+.stepper{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--line)}
+.stepper button{all:unset;cursor:pointer;padding:12px 14px;font-size:13px;display:flex;gap:10px;align-items:center;border-right:1px solid var(--line);color:var(--ink-3)}
+.stepper button:last-child{border-right:0}
+.stepper button .n{width:22px;height:22px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;font-size:11.5px;flex:none}
+.stepper button.active{color:var(--ink);background:var(--bg)}
+.stepper button.active .n{background:var(--navy);color:var(--navy-ink)}
+.stepper button.done .n{background:var(--ok);color:#fff}
+.stepper button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.stepper button span.lbl{white-space:nowrap}
+@media (max-width:760px){.stepper{grid-template-columns:repeat(5,minmax(0,1fr))}.stepper button{flex-direction:column;gap:4px;padding:10px 4px;text-align:center}.stepper button span.lbl{white-space:normal;font-size:11.5px;line-height:1.2}}
+
+.pane{display:none;padding:22px}
+.pane.active{display:block}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px}
+@media (max-width:860px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+.card{border:1px solid var(--line);background:var(--surface);padding:16px 18px}
+.card.tint{background:var(--bg)}
+.card h4{margin-bottom:10px;display:flex;align-items:center;gap:8px;justify-content:space-between}
+form.intake{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+form.intake .full{grid-column:1/-1}
+label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-2);margin-bottom:5px}
+input,select,textarea{width:100%;font:inherit;font-size:14.5px;color:var(--ink);background:var(--surface);border:1px solid var(--line-strong);border-radius:4px;padding:8px 10px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent)}
+textarea{min-height:64px;resize:vertical}
+.dd-wrap{position:relative}
+.dd{position:absolute;left:0;right:0;top:calc(100% - 22px);z-index:30;list-style:none;margin:4px 0 0;padding:4px 0;background:var(--surface);border:1px solid var(--line-strong);border-radius:4px;box-shadow:var(--shadow);max-height:240px;overflow-y:auto}
+.dd li{padding:7px 11px;cursor:pointer;font-size:14px;line-height:1.3}
+.dd li small{display:block;color:var(--ink-3);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dd li:hover,.dd li.hl{background:var(--surface-2)}
+.dd li.none{color:var(--ink-3);cursor:default}
+.btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;padding:10px 16px;border-radius:4px;background:var(--navy);color:var(--navy-ink);box-sizing:border-box}
+.btn.accent{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;border:1px solid var(--line-strong);color:var(--ink)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:14px}
+.kv dt{color:var(--ink-3);margin:0}.kv dd{margin:0;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:13px;background:var(--surface)}
+.chip.warn{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+.chip.ok{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+
+/* vehicles */
+.vehicles{display:grid;grid-template-columns:1fr;gap:10px}
+.veh{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;border:1px solid var(--line);padding:12px 14px;background:var(--surface);cursor:pointer}
+.veh:hover{border-color:var(--line-strong)}
+.veh.selected{border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy)}
+.veh.dim{opacity:.5}
+.veh .ico{width:52px;height:34px}
+.veh .ico svg{width:100%;height:100%;display:block}
+.veh b{display:block;font-size:15px}
+.veh .meta{font-size:12.5px;color:var(--ink-2)}
+.veh .cap{text-align:right}
+.veh .cap .n{font-family:"Barlow Condensed",sans-serif;font-size:26px;font-weight:600;line-height:1}
+.veh .cap .l{font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.veh .cap .tag{margin-top:6px}
+.veh:focus-visible{outline:2px solid var(--accent)}
+
+/* calc */
+table.calc{width:100%;border-collapse:collapse;font-size:14px}
+table.calc th{text-align:left;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:600;padding:6px 0;border-bottom:1px solid var(--line)}
+table.calc td{padding:9px 0;border-bottom:1px solid var(--line);vertical-align:top}
+table.calc td:last-child,table.calc th:last-child{text-align:right;white-space:nowrap}
+table.calc td .why{display:block;font-size:12.5px;color:var(--ink-3)}
+table.calc tr.total td{font-weight:600;border-bottom:0;font-size:16px;padding-top:12px}
+table.calc tr.sub td{color:var(--ink-2)}
+.adjust{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end;margin-top:12px}
+.rule{font-size:12.5px;color:var(--ink-3);border-top:1px dashed var(--line-strong);padding-top:10px;margin-top:14px}
+
+/* offer doc */
+.doc{background:#fff;color:#16213A;border:1px solid var(--line);padding:30px 34px;font-size:13.5px;box-shadow:var(--shadow);max-width:720px;margin:0 auto}
+.doc .dochead{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #1B2F5C;padding-bottom:14px;margin-bottom:18px;flex-wrap:wrap}
+.doc .dochead .logo{font-family:"Barlow Condensed",sans-serif;font-size:26px;font-weight:700;color:#1B2F5C;line-height:1}
+.doc .dochead .logo small{display:block;font-family:"IBM Plex Sans",sans-serif;font-size:11px;font-weight:400;color:#4A5568;letter-spacing:.04em;margin-top:2px}
+.doc .addr{font-size:12px;color:#4A5568;text-align:right;line-height:1.45}
+.doc h3{font-family:"Barlow Condensed",sans-serif;color:#1B2F5C;font-size:24px;margin:14px 0 8px}
+.doc table{width:100%;border-collapse:collapse;margin-top:10px}
+.doc th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#4A5568;border-bottom:1px solid #D3DAE4;padding:6px 0}
+.doc td{padding:7px 0;border-bottom:1px solid #E9EDF3;vertical-align:top}
+.doc td:last-child,.doc th:last-child{text-align:right;white-space:nowrap}
+.doc tr.total td{font-weight:600;border-bottom:0;border-top:2px solid #1B2F5C;font-size:15px}
+.doc .meta{display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;font-size:12.5px;margin:10px 0 6px}
+.doc .foot{margin-top:18px;font-size:11.5px;color:#4A5568;line-height:1.5}
+.doc .stamp{display:inline-block;border:2px solid #1F8A4C;color:#1F8A4C;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;transform:rotate(-4deg);font-size:12px;margin-top:8px}
+.statusbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;padding:12px 14px;background:var(--bg);border:1px solid var(--line)}
+.statusbar .st{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-3)}
+.statusbar .st i{width:10px;height:10px;border-radius:50%;background:var(--line-strong);display:block}
+.statusbar .st.on{color:var(--ink)}.statusbar .st.on i{background:var(--ok)}
+.statusbar .st.now{color:var(--ink);font-weight:600}.statusbar .st.now i{background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+
+/* bexio */
+.handoff{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:stretch}
+.handoff .arrow{display:grid;place-items:center;color:var(--ink-3);font-size:28px}
+.handoff ul{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.handoff li{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;padding:8px 10px;background:var(--bg);border:1px solid var(--line)}
+.handoff li .tag{flex:none}
+@media (max-width:860px){.handoff{grid-template-columns:1fr}.handoff .arrow{transform:rotate(90deg)}}
+
+/* benefits */
+.benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.benefit{background:var(--surface);border:1px solid var(--line);padding:18px 20px}
+.benefit .k{font-family:"Barlow Condensed",sans-serif;font-size:34px;font-weight:600;color:var(--navy);line-height:1}
+:root[data-theme="dark"] .benefit .k{color:var(--accent)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .benefit .k{color:var(--accent)}}
+.benefit b{display:block;margin-top:8px}
+.benefit p{color:var(--ink-2);font-size:13.5px;margin-top:4px}
+@media (max-width:860px){.benefits{grid-template-columns:1fr}}
+
+/* stages */
+.stages{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+.stages.two{grid-template-columns:1.2fr 1fr}
+.stage{border:1px solid var(--line);background:var(--surface);padding:18px 20px}
+.stage.first{border-color:var(--accent);border-width:2px}
+.stage ul{margin:10px 0 0;padding-left:18px;color:var(--ink-2);font-size:13.5px}
+.stage li+li{margin-top:4px}
+@media (max-width:860px){.stages,.stages.two{grid-template-columns:1fr}}
+/* admin */
+.admin{display:grid;grid-template-columns:200px 1fr;min-height:420px}
+.admin .side{background:var(--navy);color:var(--navy-ink);padding:14px 0}
+.admin .side .who{padding:6px 18px 14px;font-size:12px;opacity:.75;border-bottom:1px solid rgba(255,255,255,.15);margin-bottom:8px}
+.admin .side button{all:unset;display:flex;justify-content:space-between;align-items:center;width:100%;box-sizing:border-box;padding:9px 18px;font-size:13.5px;cursor:pointer;opacity:.8}
+.admin .side button:hover,.admin .side button:focus-visible{opacity:1;background:rgba(255,255,255,.08)}
+.admin .side button.active{opacity:1;background:rgba(255,255,255,.14);border-left:3px solid var(--accent);padding-left:15px}
+.admin .side button .cnt{font-family:"IBM Plex Mono",monospace;font-size:11px;background:rgba(255,255,255,.18);padding:1px 7px;border-radius:999px}
+.admin .main{padding:20px 22px;background:var(--bg);min-width:0}
+.admin .apane{display:none}.admin .apane.active{display:block}
+.admin .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.admin .top h4{font-size:18px;font-family:"Barlow Condensed",sans-serif;font-weight:600}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.tile{background:var(--surface);border:1px solid var(--line);padding:12px 14px}
+.tile .n{font-family:"Barlow Condensed",sans-serif;font-size:28px;font-weight:600;line-height:1}
+.tile .l{font-size:12px;color:var(--ink-3);margin-top:2px}
+.tbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line)}
+table.tbl{width:100%;border-collapse:collapse;font-size:13.5px;min-width:720px}
+table.tbl th{text-align:left;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:600;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--surface-2);white-space:nowrap}
+table.tbl td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+table.tbl tr:last-child td{border-bottom:0}
+table.tbl tr.row:hover td{background:var(--surface-2);cursor:pointer}
+table.tbl td.num{text-align:right;font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+table.tbl input{width:96px;padding:4px 8px;font-size:13px;text-align:right;font-family:"IBM Plex Mono",monospace}
+.st-pill{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--surface-2);color:var(--ink-2)}
+.st-pill.neu{background:var(--accent-soft);color:var(--accent-ink)}
+.st-pill.offen{background:var(--warn-soft);color:var(--warn)}
+.st-pill.gesendet{background:var(--surface-2);color:var(--navy)}
+.st-pill.bestaetigt{background:var(--ok-soft);color:var(--ok)}
+.st-pill.bexio{background:var(--ok-soft);color:var(--ok)}
+:root[data-theme="dark"] .st-pill.neu{color:var(--accent)} :root[data-theme="dark"] .st-pill.gesendet{color:var(--navy-ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .st-pill.neu{color:var(--accent)} :root:not([data-theme="light"]) .st-pill.gesendet{color:var(--navy-ink)}}
+.rules{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rule-row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);padding:10px 14px}
+.rule-row b{font-weight:500;font-size:13.5px}.rule-row span{display:block;font-size:12px;color:var(--ink-3)}
+.rule-row input{width:90px;padding:4px 8px;font-size:13px;text-align:right;font-family:"IBM Plex Mono",monospace}
+@media (max-width:860px){.admin{grid-template-columns:1fr}.admin .side{display:flex;flex-wrap:wrap;padding:8px}.admin .side .who{display:none}.admin .side button{width:auto;padding:7px 12px}.admin .side button.active{border-left:0;border-bottom:2px solid var(--accent);padding-left:12px}.tiles{grid-template-columns:1fr 1fr}.rules{grid-template-columns:1fr}}
+
+table.dispo td.day{padding:6px 4px;min-width:96px}
+table.dispo td.day .blk{display:block;font-size:11.5px;line-height:1.25;padding:5px 7px;border-radius:3px;color:#fff;white-space:normal}
+table.dispo td.day .blk.ok{background:var(--navy)}
+table.dispo td.day .blk.res{background:var(--accent);color:var(--accent-ink)}
+table.dispo td.day .blk.wart{background:var(--bad)}
+table.dispo td.day .free{display:block;height:26px;border:1px dashed var(--line-strong);border-radius:3px}
+table.dispo th.today,table.dispo td.today{background:var(--accent-soft)}
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(10,16,30,.55);z-index:50;display:grid;place-items:center;padding:16px}
+.modal-bg[hidden]{display:none}
+.modal{background:var(--surface);color:var(--ink);width:min(760px,100%);max-height:92vh;overflow:auto;border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.modal .mh{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:18px 22px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.modal .mh h4{font-family:"Barlow Condensed",sans-serif;font-size:24px;font-weight:600;line-height:1.1}
+.modal .mh .sub{font-size:13px;color:var(--ink-2);margin-top:4px}
+.modal .x{all:unset;cursor:pointer;font-size:22px;line-height:1;padding:4px 8px;border-radius:4px;color:var(--ink-2)}
+.modal .x:hover,.modal .x:focus-visible{background:var(--surface);outline:none}
+.modal .mb{padding:20px 22px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.modal .mb .full{grid-column:1/-1}
+.modal .mf{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.modal .card{padding:14px 16px}
+.timeline{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:13.5px}
+.timeline li{display:grid;grid-template-columns:14px 1fr;gap:10px;align-items:start}
+.timeline li i{width:10px;height:10px;border-radius:50%;background:var(--ok);margin-top:5px;display:block}
+.timeline li.next i{background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.timeline li.later i{background:var(--line-strong)}
+.timeline li span{display:block;font-size:12px;color:var(--ink-3)}
+@media (max-width:760px){.modal .mb{grid-template-columns:1fr}}
+/* roi */
+.roi{display:grid;grid-template-columns:1fr 1fr;gap:22px;background:var(--surface);border:1px solid var(--line);padding:22px;box-shadow:var(--shadow)}
+.roi .inputs{display:grid;gap:14px}
+.roi .inputs label{display:flex;justify-content:space-between;align-items:baseline}
+.roi .inputs label output{font-family:"IBM Plex Mono",monospace;font-weight:500;color:var(--ink)}
+.roi input[type=range]{width:100%;accent-color:var(--accent);padding:0;border:0}
+.roi .result{background:var(--navy);color:var(--navy-ink);padding:22px;display:grid;gap:14px;align-content:start}
+.roi .result .big{font-family:"Barlow Condensed",sans-serif;font-size:48px;font-weight:700;line-height:1}
+.roi .result .lbl{font-size:12.5px;opacity:.8;letter-spacing:.06em;text-transform:uppercase}
+.roi .result .row{display:grid;grid-template-columns:1fr 1fr;gap:12px;border-top:1px solid rgba(255,255,255,.2);padding-top:12px}
+.roi .result .row .n{font-family:"Barlow Condensed",sans-serif;font-size:26px;font-weight:600}
+@media (max-width:860px){.roi{grid-template-columns:1fr}}
+
+/* fragen + cta */
+.faq{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.faq li{background:var(--surface);border:1px solid var(--line);padding:16px 18px;border-left:4px solid var(--accent)}
+.faq li b{display:block;margin-bottom:4px}
+.faq li p{color:var(--ink-2);font-size:14px}
+@media (max-width:860px){.faq{grid-template-columns:1fr}}
+.cta{background:var(--navy);color:var(--navy-ink);padding:32px;display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:center}
+.cta h2{color:var(--navy-ink)}
+.cta ol{margin:14px 0 0;padding-left:20px;display:grid;gap:8px;font-size:14.5px}
+.cta ol li::marker{font-family:"IBM Plex Mono",monospace;color:var(--accent)}
+.cta .box{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);padding:18px 20px;font-size:14px}
+.cta .box b{display:block;font-family:"Barlow Condensed",sans-serif;font-size:22px;margin-bottom:6px}
+.cta .box a{color:var(--accent);text-decoration:none;font-weight:600}
+@media (max-width:860px){.cta{grid-template-columns:1fr}}
+footer{padding-block:28px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13px}
+.disclaimer{background:var(--accent-soft);border:1px solid var(--accent);padding:10px 14px;font-size:13px;margin-bottom:18px}
+@media (prefers-reduced-motion:no-preference){.pane.active{animation:fade .18s ease-out}}
+@keyframes fade{from{opacity:.4}to{opacity:1}}
+</style>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">MIDIA TOURS <span>Dispo-Assistent, Konzeptvorschau</span></div>
+    <ul>
+      <li><a href="#heute">Heute vs. Zukunft</a></li>
+      <li><a href="#demo">Interaktive Demo</a></li>
+      <li><a href="#admin">Adminbereich</a></li>
+      <li><a href="#nutzen">Nutzen &amp; Rechner</a></li>
+      <li><a href="#stufen">Ausbaustufen</a></li>
+      <li><a href="#fragen">Fragen</a></li>
+      <li><a href="#naechster-schritt">Nächster Schritt</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Konzeptvorschau für Midia Tours, Standort Uzwil</p>
+      <h1 style="margin-top:10px">Von der Anfrage bis zur Rechnung in Bexio, ohne dass das Wissen im Kopf bleiben muss.</h1>
+      <p class="lead">Heute entscheiden Ihre Mitarbeitenden aus Erfahrung, welcher Bus passt und was die Fahrt kostet. Diese Vorschau zeigt, wie ein internes Tool genau dieses Wissen abbildet: Fahrzeugvorschlag, Kalkulation, Offerte und Übergabe an Bexio werden vorbereitet, der Mensch prüft und entscheidet.</p>
+    </div>
+    <aside class="pitch">
+      <p>Der persönliche Kontakt mit den Kunden bleibt bestehen. Automatisiert wird die administrative Arbeit im Hintergrund.</p>
+      <p>Der Kunde ruft weiterhin an oder schreibt. Der Mitarbeiter erfasst die Eckdaten während des Gesprächs, das System bereitet alles Weitere vor.</p>
+    </aside>
+  </div>
+</header>
+
+<section id="heute">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Ausgangslage</p>
+      <h2>Was sich ändert, und was bewusst gleich bleibt</h2>
+      <p class="muted">Links der heutige Ablauf, wie er im Gespräch beschrieben wurde. Rechts der mögliche Ablauf mit dem Dispo-Assistenten. Die Schritte mit Menschen bleiben, die Schritte dazwischen übernimmt das System.</p>
+    </div>
+    <div class="flows">
+      <div class="flow today">
+        <h3><span class="tag">Heute</span> Anfrage bis Rechnung</h3>
+        <ol class="steps">
+          <li><span class="dot">1</span><div><b>Anfrage kommt herein</b><span>Webformular, Telefon oder E-Mail. Die Daten landen im Postfach.</span></div></li>
+          <li><span class="dot head">2</span><div><b>Fahrzeug aus dem Kopf bestimmen</b><span>Welcher Bus passt zu Personenzahl, Strecke und Dauer? Weiss nur, wer die Flotte kennt.</span></div></li>
+          <li><span class="dot head">3</span><div><b>Preis manuell kalkulieren</b><span>Tagespauschale, Ruhezeiten, Route, Zuschläge. Jedes Mal neu zusammengesucht.</span></div></li>
+          <li><span class="dot">4</span><div><b>Offerte schreiben</b><span>Kunden- und Fahrtdaten werden von Hand übertragen.</span></div></li>
+          <li><span class="dot">5</span><div><b>Auftrag in Bexio erfassen</b><span>Dieselben Daten ein drittes Mal eintippen.</span></div></li>
+        </ol>
+        <div class="legend"><span><i style="background:var(--bad)"></i>hängt am Erfahrungswissen einzelner Personen</span></div>
+      </div>
+      <div class="flow future">
+        <h3><span class="tag accent">Mögliche Zukunft</span> mit Dispo-Assistent</h3>
+        <ol class="steps">
+          <li><span class="dot human">1</span><div><b>Anfrage entgegennehmen</b><span>Telefonat, Webformular oder Mail. Der Mitarbeiter erfasst die Eckdaten in einer Maske, Webanfragen landen direkt darin.</span></div></li>
+          <li><span class="dot auto">2</span><div><b>Fahrzeug- und Preisvorschlag</b><span>System kennt Flotte, Kapazitäten, Route, Fahrzeit und Preisregeln. Fehlende Angaben werden markiert.</span></div></li>
+          <li><span class="dot human">3</span><div><b>Mitarbeiter prüft und passt an</b><span>Fahrzeug bestätigen, Preis anpassen, Bemerkungen ergänzen. Volle Kontrolle.</span></div></li>
+          <li><span class="dot auto">4</span><div><b>Offerte erstellen und senden</b><span>Professionelles PDF aus den Daten, nach Freigabe automatisch an den Kunden.</span></div></li>
+          <li><span class="dot human">5</span><div><b>Kunde bestätigt</b><span>Per Klick in der Mail oder telefonisch, der Mitarbeiter setzt den Status.</span></div></li>
+          <li><span class="dot auto">6</span><div><b>Auftrag und Rechnung in Bexio</b><span>Kontakt, Auftrag und Positionen werden übergeben. Keine dritte Eingabe.</span></div></li>
+        </ol>
+        <div class="legend"><span><i style="background:var(--accent)"></i>Mensch entscheidet</span><span><i style="background:var(--navy)"></i>System bereitet vor</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Interaktive Demo</p>
+      <h2>So könnte die interne Oberfläche aussehen</h2>
+      <p class="muted">Klicken Sie sich durch die fünf Schritte. Die Eingaben sind änderbar: Passen Sie zum Beispiel die Personenzahl oder das Ziel an und beobachten Sie, wie sich Fahrzeugvorschlag und Kalkulation verändern.</p>
+    </div>
+    <div class="disclaimer"><b>Beispielwerte.</b> Flotte nach Ihrer Website (Setra und Sprinter), Preise, Pauschalen und Distanzen sind Platzhalter und werden in der Umsetzung gemeinsam mit Midia Tours definiert. Distanzen sind hier grob geschätzt, in der echten Lösung liefert ein Routing-Dienst Kilometer und Fahrzeit.</div>
+
+    <div class="app">
+      <div class="app-bar"><div class="dots"><i></i><i></i><i></i></div><div class="title">Dispo-Assistent</div><div class="note">Angemeldet: Disposition Uzwil</div></div>
+      <div class="stepper" id="stepper">
+        <button class="active" data-step="1"><span class="n">1</span><span class="lbl">Anfrage erfassen</span></button>
+        <button data-step="2"><span class="n">2</span><span class="lbl">Fahrzeugvorschlag</span></button>
+        <button data-step="3"><span class="n">3</span><span class="lbl">Kalkulation</span></button>
+        <button data-step="4"><span class="n">4</span><span class="lbl">Offerte</span></button>
+        <button data-step="5"><span class="n">5</span><span class="lbl">Auftrag &amp; Bexio</span></button>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="pane active" data-pane="1">
+        <div class="grid-2">
+          <div>
+            <h4 style="margin-bottom:12px">Neue Anfrage <span class="tag">Quelle: Telefon</span></h4>
+            <form class="intake" id="intake" onsubmit="return false">
+              <div><label for="f-name">Kunde / Firma</label><input id="f-name" value="Musikverein Harmonie Bern"></div>
+              <div><label for="f-contact">Kontakt</label><input id="f-contact" value="Peter Wyss, 079 000 00 00"></div>
+              <div><label for="f-pax">Personen</label><input id="f-pax" type="number" min="1" max="500" value="45"></div>
+              <div><label for="f-source">Anfragekanal</label><select id="f-source"><option>Telefon</option><option>Webformular</option><option>E-Mail</option><option>Bestandskunde</option></select></div>
+              <div class="dd-wrap"><label for="f-from">Abfahrtsort</label><input id="f-from" value="" autocomplete="off" placeholder="Stadt wählen oder tippen"><ul class="dd" id="from-dd" hidden></ul><div class="small muted" id="from-hint" style="margin-top:4px"></div></div>
+              <div class="dd-wrap"><label for="f-to">Zielort / Destination</label><input id="f-to" value="" autocomplete="off" placeholder="Destination wählen oder tippen"><ul class="dd" id="to-dd" hidden></ul><div class="small muted" id="to-hint" style="margin-top:4px"></div></div>
+              <div><label for="f-date">Abfahrtsdatum</label><input id="f-date" type="date" value="2026-10-17"></div>
+              <div><label for="f-time">Abfahrtszeit</label><input id="f-time" type="time" value="07:00"></div>
+              <div><label for="f-return">Rückfahrt</label><select id="f-return"><option value="0">Gleicher Tag</option><option value="1" selected>Nächster Tag</option><option value="2">Nach 2 Nächten</option><option value="3">Nach 3 Nächten</option></select></div>
+              <div><label for="f-rettime">Rückfahrt Abfahrtszeit</label><input id="f-rettime" type="time" value=""></div>
+              <div><label for="f-billing">Rechnungsadresse</label><input id="f-billing" value="" placeholder="Strasse, PLZ Ort"></div>
+              <div><label for="f-hotel">Fahrer-Übernachtung</label><select id="f-hotel"><option value="">Noch offen</option><option value="none">Keine, Tagesausflug</option><option value="kunde">Kunde organisiert</option><option value="midia">Midia Tours organisiert</option></select></div>
+              <div><label for="f-wish">Fahrzeugwunsch (optional)</label><select id="f-wish">
+                <option value="">Keine Präferenz, System schlägt vor</option>
+                <option value="vip">VIP-Ausstattung</option>
+                <option value="dd">Doppeldecker</option>
+                <option value="wc">Mit WC</option>
+                <option value="lift">Rollstuhlgerecht</option>
+                <option value="mini">Minibus</option>
+                <option value="s431">Bestimmtes Fahrzeug: Setra S 431 DT</option>
+                <option value="s517hdh">Bestimmtes Fahrzeug: Setra S 517 HDH</option>
+                <option value="vkl">Bestimmtes Fahrzeug: Mercedes V-Klasse</option>
+              </select></div>
+              <div><label for="f-wish-note">Spezialwunsch</label><input id="f-wish-note" placeholder="z.B. Kaffeemaschine, Anhänger, Beschriftung"></div>
+              <div class="full"><label for="f-notes">Bemerkungen</label><textarea id="f-notes">Konzertreise, Instrumente im Gepäckraum, WC im Bus gewünscht.</textarea></div>
+            </form>
+          </div>
+          <div>
+            <div class="card tint">
+              <h4>Das System erkennt beim Tippen</h4>
+              <dl class="kv" id="live-kv"></dl>
+              <div style="margin-top:14px"><p class="eyebrow" style="margin-bottom:8px">Fehlende Angaben</p><div class="chips" id="missing"></div></div>
+            </div>
+            <p class="small muted" style="margin-top:12px">Während des Telefonats sieht der Mitarbeiter sofort, was noch fehlt, und kann direkt nachfragen. Beim Webformular passiert dieselbe Prüfung automatisch.</p>
+          </div>
+        </div>
+        <div class="actions"><button class="btn" data-go="2">Weiter zum Fahrzeugvorschlag</button></div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="pane" data-pane="2">
+        <div class="grid-2">
+          <div>
+            <h4 style="margin-bottom:12px">Passende Fahrzeuge für <span class="mono" id="v-pax"></span> Personen</h4>
+            <div class="vehicles" id="vehicles"></div>
+          </div>
+          <div>
+            <div class="card tint">
+              <h4>Warum dieser Vorschlag</h4>
+              <ul style="margin:0;padding-left:18px;font-size:13.5px;color:var(--ink-2)" id="why-list"></ul>
+            </div>
+            <div class="card" style="margin-top:14px">
+              <h4>Später ergänzbar <span class="tag">Stufe 2</span></h4>
+              <p class="small muted">Verfügbarkeit pro Fahrzeug und Datum, Fahrerzuteilung und Wartungsfenster. Dann zeigt die Liste nur noch Busse, die am gewünschten Tag wirklich frei sind.</p>
+            </div>
+          </div>
+        </div>
+        <div class="actions"><button class="btn ghost" data-go="1">Zurück</button><button class="btn" data-go="3">Fahrzeug übernehmen, zur Kalkulation</button></div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="pane" data-pane="3">
+        <div class="grid-2">
+          <div>
+            <h4 style="margin-bottom:6px">Preisvorschlag <span class="tag accent">automatisch berechnet</span></h4>
+            <table class="calc" id="calc"></table>
+            <div class="adjust">
+              <div><label for="f-adjust">Manuelle Anpassung (CHF, z.B. Rabatt als Minus)</label><input id="f-adjust" type="number" step="10" value="0"></div>
+              <div><span class="tag ok">Mitarbeiter behält Kontrolle</span></div>
+            </div>
+            <p class="rule">Regeln, die hier greifen: Tagespauschale je Fahrzeugklasse, Kilometersatz für die Gesamtstrecke, Fahrer-Übernachtung bei Mehrtagesfahrten, Auslandszuschlag für Maut und Vignette, Zweitfahrer bei mehr als 9 Stunden Lenkzeit pro Tag. Alles Beispielwerte, die Logik wird 1:1 nach Ihrer heutigen Praxis abgebildet.</p>
+          </div>
+          <div>
+            <div class="card tint">
+              <h4>Fahrt in Zahlen</h4>
+              <dl class="kv" id="trip-kv"></dl>
+            </div>
+            <div class="card" style="margin-top:14px" id="rest-card">
+              <h4>Lenk- und Ruhezeit</h4>
+              <p class="small" id="rest-text"></p>
+            </div>
+          </div>
+        </div>
+        <div class="actions"><button class="btn ghost" data-go="2">Zurück</button><button class="btn" data-go="4">Offerte erstellen</button></div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="pane" data-pane="4">
+        <div class="statusbar" id="offer-status">
+          <span class="st now" data-s="draft"><i></i>Entwurf</span>
+          <span class="st" data-s="approved"><i></i>Freigegeben</span>
+          <span class="st" data-s="sent"><i></i>An Kunde gesendet</span>
+          <span class="st" data-s="confirmed"><i></i>Vom Kunden bestätigt</span>
+        </div>
+        <div class="doc" id="doc"></div>
+        <div class="actions" style="justify-content:center">
+          <button class="btn ghost" data-go="3">Zurück</button>
+          <button class="btn" id="btn-approve">Offerte freigeben und senden</button>
+          <button class="btn accent" id="btn-confirm" disabled>Kundenbestätigung simulieren</button>
+        </div>
+        <p class="small muted" style="text-align:center;margin-top:10px">Der Kunde erhält die Offerte als PDF per Mail mit einem Bestätigungslink. Ruft er stattdessen an, setzt der Mitarbeiter die Bestätigung mit einem Klick.</p>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="pane" data-pane="5">
+        <div class="handoff">
+          <div class="card">
+            <h4>Auftrag im Dispo-Assistenten <span class="tag ok" id="order-tag">bestätigt</span></h4>
+            <dl class="kv" id="order-kv"></dl>
+          </div>
+          <div class="arrow">&#8594;</div>
+          <div class="card">
+            <h4>Übergabe an Bexio <span class="tag">via API</span></h4>
+            <ul id="bexio-list"></ul>
+            <p class="small muted" style="margin-top:12px">Kontakt, Auftrag und Positionen werden über die offizielle Bexio-Schnittstelle übergeben, die Rechnung liegt danach als Entwurf in Bexio bereit. Ob sie automatisch oder nach Prüfung verschickt wird, legen wir gemeinsam fest.</p>
+          </div>
+        </div>
+        <div class="actions"><button class="btn ghost" data-go="4">Zurück</button><button class="btn ghost" data-go="1">Neue Anfrage durchspielen</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="admin">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Adminbereich</p>
+      <h2>So sieht es intern im Alltag aus</h2>
+      <p class="muted">Die Demo oben zeigt eine einzelne Anfrage. Im Alltag laufen mehrere parallel. Der Adminbereich ist die Startseite des Tools: alle Anfragen mit Status auf einen Blick, dazu Flotte und Preisregeln, die Midia Tours selbst pflegt. Die Zahlen unten sind Beispiele.</p>
+    </div>
+    <div class="app">
+      <div class="app-bar"><div class="dots"><i></i><i></i><i></i></div><div class="title">Dispo-Assistent</div><div class="note">Uzwil · Fr, 11.09.2026</div></div>
+      <div class="admin">
+        <div class="side">
+          <div class="who">Angemeldet als<br><b style="opacity:1">Disposition Uzwil</b></div>
+          <button class="active" data-apane="anfragen">Anfragen <span class="cnt">7</span></button>
+          <button data-apane="offerten">Offerten <span class="cnt">3</span></button>
+          <button data-apane="auftraege">Aufträge <span class="cnt">12</span></button>
+          <button data-apane="fahrzeuge">Fahrzeuge</button>
+          <button data-apane="regeln">Preisregeln</button>
+          <button data-apane="kunden">Kunden</button>
+          <button data-apane="dispo" style="margin-top:8px;border-top:1px solid rgba(255,255,255,.15);padding-top:12px">Disposition <span class="cnt" style="background:var(--accent);color:var(--accent-ink)">Stufe 2</span></button>
+        </div>
+        <div class="main">
+          <div class="apane active" data-apane="anfragen">
+            <div class="tiles">
+              <div class="tile"><div class="n">3</div><div class="l">Neue Anfragen heute</div></div>
+              <div class="tile"><div class="n">4</div><div class="l">Offerten offen</div></div>
+              <div class="tile"><div class="n">2</div><div class="l">Warten auf Kundenbestätigung</div></div>
+              <div class="tile"><div class="n mono">CHF 28’400</div><div class="l">Offertvolumen diese Woche</div></div>
+            </div>
+            <div class="top"><h4>Offene Anfragen</h4><div class="chips"><span class="chip">Alle</span><span class="chip">Neu</span><span class="chip">Offerte offen</span><span class="chip">Bestätigt</span></div></div>
+            <div class="tbl-wrap"><table class="tbl">
+              <tr><th>Nr.</th><th>Kunde</th><th>Fahrt</th><th>Datum</th><th>Pers.</th><th>Fahrzeug</th><th>Preis</th><th>Quelle</th><th>Status</th></tr>
+              <tr class="row" data-req='{"name": "Musikverein Harmonie Bern", "contact": "Peter Wyss, 079 000 00 00", "pax": 45, "from_": "Bern", "to": "Europa-Park", "date": "2026-10-17", "time": "07:00", "ret": 1, "source": "Telefon", "notes": "Konzertreise, Instrumente im Gepäckraum, WC im Bus gewünscht.", "wish": ""}'><td class="mono">A-1091</td><td>Musikverein Harmonie Bern</td><td>Bern → Europa-Park</td><td>17.10.</td><td class="num">45</td><td>S 416 GT-HD/2</td><td class="num">4’656</td><td>Telefon</td><td><span class="st-pill neu">Neu</span></td></tr>
+              <tr class="row" data-req='{"name": "Primarschule Flawil", "contact": "Sekretariat, 071 000 00 00", "pax": 62, "from_": "Winterthur", "to": "Verkehrshaus Luzern", "date": "2026-10-02", "time": "08:00", "ret": 0, "source": "Webformular", "notes": "Schulreise 3 Klassen, 6 Begleitpersonen inbegriffen.", "wish": ""}'><td class="mono">A-1090</td><td>Primarschule Flawil</td><td>Flawil → Verkehrshaus Luzern</td><td>02.10.</td><td class="num">62</td><td>S 431 DT</td><td class="num">2’180</td><td>Webformular</td><td><span class="st-pill neu">Neu</span></td></tr>
+              <tr class="row" data-req='{"name": "Seniorenrat Wil", "contact": "Ruth Keller, 071 000 00 00", "pax": 38, "from_": "St. Gallen", "to": "Insel Mainau", "date": "2026-09-24", "time": "08:30", "ret": 0, "source": "Telefon", "notes": "Bitte Bus mit WC, mehrere Personen mit Rollator.", "wish": "wc"}'><td class="mono">A-1089</td><td>Seniorenrat Wil</td><td>Wil → Insel Mainau</td><td>24.09.</td><td class="num">38</td><td>S 515 HD</td><td class="num">1’890</td><td>Telefon</td><td><span class="st-pill neu">Neu</span></td></tr>
+              <tr class="row" data-req='{"name": "FC Uzwil Junioren", "contact": "Marco Brunner, 079 000 00 00", "pax": 55, "from_": "Uzwil", "to": "Allianz Arena", "date": "2026-10-11", "time": "09:00", "ret": 0, "source": "E-Mail", "notes": "Heimspiel-Besuch, Rückfahrt ca. 23:00 nach Spielende.", "wish": ""}'><td class="mono">A-1088</td><td>FC Uzwil Junioren</td><td>Uzwil → Allianz Arena</td><td>11.10.</td><td class="num">55</td><td>S 517 HD</td><td class="num">3’420</td><td>E-Mail</td><td><span class="st-pill offen">Offerte offen</span></td></tr>
+              <tr class="row" data-req='{"name": "Bühler AG, Personalanlass", "contact": "Personalabteilung, 071 000 00 00", "pax": 150, "from_": "Uzwil", "to": "Säntis Schwebebahn", "date": "2026-09-19", "time": "13:00", "ret": 0, "source": "Bestandskunde", "notes": "Firmenanlass, Verpflegung auf dem Säntis.", "wish": ""}'><td class="mono">A-1087</td><td>Bühler AG, Personalanlass</td><td>Uzwil → Säntis</td><td>19.09.</td><td class="num">150</td><td>2× S 431 DT</td><td class="num">4’980</td><td>Bestandskunde</td><td><span class="st-pill gesendet">Gesendet</span></td></tr>
+              <tr class="row" data-req='{"name": "Chor Cantabile St. Gallen", "contact": "Vreni Huber, 079 000 00 00", "pax": 48, "from_": "St. Gallen", "to": "Oktoberfest München", "date": "2026-09-26", "time": "07:00", "ret": 1, "source": "Webformular", "notes": "Übernachtung in München, Rückfahrt am Sonntag Nachmittag.", "wish": ""}'><td class="mono">A-1086</td><td>Chor Cantabile St. Gallen</td><td>St. Gallen → Oktoberfest München</td><td>26.09.</td><td class="num">48</td><td>S 416 GT-HD/2</td><td class="num">5’110</td><td>Webformular</td><td><span class="st-pill gesendet">Gesendet</span></td></tr>
+              <tr class="row" data-req='{"name": "Hotel Uzwil, Gästetransfer", "contact": "Rezeption, 071 000 00 00", "pax": 14, "from_": "Uzwil", "to": "Flughafen Zürich", "date": "2026-09-15", "time": "05:30", "ret": 0, "source": "Telefon", "notes": "Frühflug, Gepäck für 14 Personen.", "wish": "mini"}'><td class="mono">A-1085</td><td>Hotel Uzwil, Gästetransfer</td><td>Uzwil → Flughafen Zürich</td><td>15.09.</td><td class="num">14</td><td>Sprinter Travel</td><td class="num">640</td><td>Telefon</td><td><span class="st-pill bestaetigt">Bestätigt</span></td></tr>
+            </table></div>
+            <p class="small muted" style="margin-top:10px">Klick auf eine Zeile öffnet die Zusammenfassung der Anfrage mit Fahrzeugvorschlag, Preis und Status. Bestätigte Aufträge gehen automatisch an Bexio.</p>
+          </div>
+          <div class="apane" data-apane="offerten">
+            <div class="top"><h4>Offerten</h4></div>
+            <div class="tbl-wrap"><table class="tbl">
+              <tr><th>Offerte</th><th>Kunde</th><th>Fahrt</th><th>Total</th><th>Gesendet</th><th>Gültig bis</th><th>Status</th></tr>
+              <tr class="row"><td class="mono">OF-2026-1088</td><td>FC Uzwil Junioren</td><td>Uzwil → Allianz Arena</td><td class="num">3’420</td><td>–</td><td>–</td><td><span class="st-pill offen">Entwurf, Freigabe fehlt</span></td></tr>
+              <tr class="row"><td class="mono">OF-2026-1087</td><td>Bühler AG</td><td>Uzwil → Säntis</td><td class="num">4’980</td><td>09.09.</td><td>09.10.</td><td><span class="st-pill gesendet">Gesendet, Erinnerung in 5 Tagen</span></td></tr>
+              <tr class="row"><td class="mono">OF-2026-1086</td><td>Chor Cantabile</td><td>St. Gallen → München</td><td class="num">5’110</td><td>08.09.</td><td>08.10.</td><td><span class="st-pill gesendet">Gesendet, 2× geöffnet</span></td></tr>
+            </table></div>
+            <p class="small muted" style="margin-top:10px">Das System erinnert automatisch an unbeantwortete Offerten. Heute macht das jemand aus dem Kopf oder gar nicht.</p>
+          </div>
+          <div class="apane" data-apane="auftraege">
+            <div class="top"><h4>Aufträge</h4></div>
+            <div class="tbl-wrap"><table class="tbl">
+              <tr><th>Auftrag</th><th>Kunde</th><th>Fahrt</th><th>Datum</th><th>Fahrzeug</th><th>Fahrer</th><th>Bexio</th></tr>
+              <tr class="row"><td class="mono">AU-2026-2255</td><td>Hotel Uzwil</td><td>Uzwil → Flughafen Zürich</td><td>15.09.</td><td>Sprinter Travel</td><td><span class="tag">Stufe 2</span></td><td><span class="st-pill bexio">Rechnung erstellt</span></td></tr>
+              <tr class="row"><td class="mono">AU-2026-2254</td><td>Gemeinde Oberbüren</td><td>Oberbüren → Ballenberg</td><td>13.09.</td><td>S 517 HDH</td><td><span class="tag">Stufe 2</span></td><td><span class="st-pill bexio">Rechnung erstellt</span></td></tr>
+              <tr class="row"><td class="mono">AU-2026-2253</td><td>Pfarrei Niederuzwil</td><td>Uzwil → Einsiedeln</td><td>12.09.</td><td>S 515 HDH</td><td><span class="tag">Stufe 2</span></td><td><span class="st-pill ok">Auftrag übergeben</span></td></tr>
+            </table></div>
+          </div>
+          <div class="apane" data-apane="fahrzeuge">
+            <div class="top"><h4>Flotte</h4><span class="tag accent">Tagespauschale hier ändern, die Demo rechnet sofort neu</span></div>
+            <div class="tbl-wrap"><table class="tbl" id="fleet-table"></table></div>
+            <p class="small muted" style="margin-top:10px">Das ist das Wissen, das heute im Kopf steckt: welches Fahrzeug wie viele Plätze hat, was es ausmacht und was es kostet. Hier gepflegt, für alle Mitarbeitenden gleich.</p>
+          </div>
+          <div class="apane" data-apane="regeln">
+            <div class="top"><h4>Preisregeln</h4><span class="tag accent">Werte hier ändern, die Demo rechnet sofort neu</span></div>
+            <div class="rules" id="rules"></div>
+            <p class="small muted" style="margin-top:12px">Weitere Regeln nach Bedarf: Wochenend- und Feiertagszuschlag, Saisonpreise, Stammkundenrabatt, Mindestpreis pro Fahrt. Alles, was heute "aus Erfahrung" entschieden wird, lässt sich hier als Regel abbilden.</p>
+          </div>
+          <div class="apane" data-apane="dispo">
+            <div class="top"><h4>Wochenplan Fahrzeuge, KW 38 (nächste Woche)</h4><span class="tag accent">Stufe 2, optional</span></div>
+            <div class="tbl-wrap"><table class="tbl dispo" id="dispo-table"></table></div>
+            <div class="legend" style="margin-top:12px"><span><i style="background:var(--navy)"></i>Auftrag bestätigt</span><span><i style="background:var(--accent)"></i>Offerte offen, reserviert</span><span><i style="background:var(--bad)"></i>Wartung / nicht verfügbar</span><span><i style="background:var(--surface-2);border:1px solid var(--line-strong)"></i>frei</span></div>
+            <p class="small muted" style="margin-top:12px">Mit Stufe 2 prüft der Fahrzeugvorschlag automatisch, ob der Bus am gewünschten Tag frei ist, und zeigt nur verfügbare Fahrzeuge. Fahrer werden dem Auftrag zugeteilt, Wartungsfenster blockieren das Fahrzeug. In Stufe 1 ist das nicht enthalten, die Verfügbarkeit prüft der Mitarbeiter wie heute.</p>
+          </div>
+          <div class="apane" data-apane="kunden">
+            <div class="top"><h4>Kunden</h4></div>
+            <div class="tbl-wrap"><table class="tbl">
+              <tr><th>Kunde</th><th>Kontakt</th><th>Fahrten</th><th>Letzte Fahrt</th><th>Umsatz 2026</th><th>Bexio</th></tr>
+              <tr class="row"><td>Bühler AG</td><td>Personalabteilung</td><td class="num">6</td><td>19.09.</td><td class="num">21’300</td><td><span class="st-pill bexio">verknüpft</span></td></tr>
+              <tr class="row"><td>Musikverein Harmonie Bern</td><td>Peter Wyss</td><td class="num">1</td><td>–</td><td class="num">–</td><td><span class="st-pill">wird angelegt</span></td></tr>
+              <tr class="row"><td>Hotel Uzwil</td><td>Rezeption</td><td class="num">23</td><td>15.09.</td><td class="num">14’720</td><td><span class="st-pill bexio">verknüpft</span></td></tr>
+            </table></div>
+            <p class="small muted" style="margin-top:10px">Bestandskunden werden beim Erfassen erkannt, Kontaktdaten und Rechnungsadresse sind sofort da.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="nutzen">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Geschäftlicher Nutzen</p>
+      <h2>Weniger Administration, gleicher Kundenkontakt</h2>
+    </div>
+    <div class="benefits">
+      <div class="benefit"><div class="k">1×</div><b>Daten einmal erfassen</b><p>Kunde, Fahrt und Preis fliessen von der Anfrage über die Offerte bis nach Bexio, ohne Abtippen.</p></div>
+      <div class="benefit"><div class="k">Minuten</div><b>statt Stunden bis zur Offerte</b><p>Fahrzeug und Preisvorschlag stehen sofort. Der Mitarbeiter prüft, statt zu suchen und zu rechnen.</p></div>
+      <div class="benefit"><div class="k">Im System</div><b>statt nur im Kopf</b><p>Flotte, Kapazitäten und Preisregeln sind dokumentiert. Neue Mitarbeitende können ab Tag eins mitarbeiten, Ferien und Abwesenheiten werden einfacher.</p></div>
+      <div class="benefit"><div class="k">Weniger</div><b>Fehler bei Fahrzeug und Preis</b><p>Zu kleiner Bus, vergessener Zuschlag oder fehlende Ruhezeit werden vom System gemeldet, bevor die Offerte rausgeht.</p></div>
+      <div class="benefit"><div class="k">Skaliert</div><b>bei mehr Anfragen</b><p>Mehr Anfragen bedeuten nicht automatisch mehr Personal in der Disposition.</p></div>
+      <div class="benefit"><div class="k">100%</div><b>persönlicher Kontakt bleibt</b><p>Kunden, die anrufen wollen, rufen weiterhin an. Das Tool arbeitet im Hintergrund für den Mitarbeiter, nicht statt ihm.</p></div>
+    </div>
+
+    <div class="sec-head" style="margin-top:48px">
+      <p class="eyebrow">Rechner</p>
+      <h2>Was kostet der heutige Ablauf?</h2>
+      <p class="muted">Tragen Sie Ihre eigenen Zahlen ein. Die Voreinstellungen sind Annahmen, keine Messwerte von Midia Tours.</p>
+    </div>
+    <div class="roi">
+      <div class="inputs">
+        <div><label for="r-req">Anfragen pro Woche <output id="r-req-o">25</output></label><input type="range" id="r-req" min="5" max="100" step="1" value="25"></div>
+        <div><label for="r-now">Minuten pro Anfrage heute (Fahrzeug, Kalkulation, Offerte, Bexio) <output id="r-now-o">40 min</output></label><input type="range" id="r-now" min="10" max="120" step="5" value="40"></div>
+        <div><label for="r-new">Minuten pro Anfrage mit Dispo-Assistent <output id="r-new-o">10 min</output></label><input type="range" id="r-new" min="2" max="60" step="1" value="10"></div>
+        <div><label for="r-rate">Interner Stundensatz <output id="r-rate-o">CHF 70</output></label><input type="range" id="r-rate" min="40" max="150" step="5" value="70"></div>
+        <p class="small muted">Nicht eingerechnet: vermiedene Fehler (falscher Bus, vergessener Zuschlag), schnellere Offerten und damit höhere Abschlussquote, Einarbeitung neuer Mitarbeitender.</p>
+      </div>
+      <div class="result">
+        <div><div class="lbl">Gesparte Arbeitszeit pro Monat</div><div class="big" id="r-hours">–</div></div>
+        <div class="row">
+          <div><div class="lbl">Pro Jahr</div><div class="n" id="r-hours-y">–</div></div>
+          <div><div class="lbl">Gegenwert pro Jahr</div><div class="n" id="r-chf">–</div></div>
+        </div>
+        <div class="row">
+          <div><div class="lbl">Heute pro Anfrage</div><div class="n" id="r-cost-now">–</div></div>
+          <div><div class="lbl">Neu pro Anfrage</div><div class="n" id="r-cost-new">–</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="stufen">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Vorgehen</p>
+      <h2>Klein anfangen, dort wo heute das Wissen im Kopf steckt</h2>
+      <p class="muted">Eine komplette Dispositionssoftware wäre für den Einstieg unnötig komplex. Sinnvoll ist ein erster Schritt, der genau die Informationen und Regeln digitalisiert, die heute nur im Kopf sind.</p>
+    </div>
+    <div class="stages two">
+      <div class="stage first">
+        <span class="tag accent">Stufe 1, empfohlener Start</span>
+        <h3 style="margin-top:10px">Von der Anfrage bis zur Rechnung in Bexio</h3>
+        <ul>
+          <li>Erfassungsmaske für Telefon, Mail und Webformular</li>
+          <li>Flotte mit Kapazitäten und Ausstattung hinterlegt</li>
+          <li>Adresssuche und Routing mit echten Kilometern und Fahrzeiten</li>
+          <li>Fahrzeugvorschlag und Preisvorschlag nach Ihren Regeln, inklusive Lenkzeitprüfung</li>
+          <li>Offerte als PDF, Versand nach Freigabe, Bestätigungslink für den Kunden</li>
+          <li>Auftrag automatisch anlegen, Übersicht aller offenen Anfragen und Offerten</li>
+          <li>Kontakt, Auftrag und Positionen an Bexio übergeben, Rechnung dort vorbereitet</li>
+        </ul>
+      </div>
+      <div class="stage">
+        <span class="tag">Stufe 2, optional</span>
+        <h3 style="margin-top:10px">Verfügbarkeit und Disposition</h3>
+        <ul>
+          <li>Kalender pro Fahrzeug und Fahrer</li>
+          <li>Verfügbarkeitsprüfung direkt im Fahrzeugvorschlag</li>
+          <li>Fahrerzuteilung und Wartungsfenster</li>
+          <li>Mehrtagesreisen mit mehreren Etappen und Zwischenzielen</li>
+          <li>Auswertungen: Auslastung, Umsatz pro Fahrzeug</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="fragen">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Häufige Fragen</p>
+      <h2>Was sich für Midia Tours nicht ändert</h2>
+    </div>
+    <ul class="faq">
+      <li><b>Bleibt die Website, wie sie ist?</b><p>Ja. Das bestehende Anfrageformular bleibt, seine Daten landen direkt im Tool statt nur im Postfach.</p></li>
+      <li><b>Bleibt Bexio unsere Buchhaltung?</b><p>Ja. Bexio bleibt führend für Rechnungen und Buchhaltung. Das Tool liefert Kontakt, Auftrag und Positionen, damit niemand mehr abtippt.</p></li>
+      <li><b>Was ändert sich für Kunden, die anrufen?</b><p>Nichts. Sie sprechen weiterhin mit einem Menschen. Der Mitarbeiter hat während des Gesprächs nur bessere Werkzeuge.</p></li>
+      <li><b>Wem gehört das Wissen nachher?</b><p>Midia Tours. Flotte, Preisregeln und Pauschalen pflegen Sie selbst im Adminbereich, ohne Agentur und ohne Programmierung.</p></li>
+      <li><b>Wo liegen die Daten?</b><p>Auf Servern in der Schweiz oder EU, nach Ihrer Wahl. Zugriff nur für Ihre Mitarbeitenden, Backups täglich.</p></li>
+      <li><b>Müssen wir alles auf einmal einführen?</b><p>Nein. Stufe 1 läuft für sich alleine. Verfügbarkeit und Disposition kommen erst, wenn Stufe 1 im Alltag sitzt.</p></li>
+      <li><b>Was, wenn ein Fall nicht ins Schema passt?</b><p>Der Mitarbeiter überschreibt jeden Vorschlag. Fahrzeug, Preis, Positionen. Das Tool schlägt vor, es entscheidet nicht.</p></li>
+      <li><b>Wie lange dauert die Umsetzung?</b><p>Ein Kick-off-Gespräch, danach wenige Wochen bis zur ersten produktiven Version. Sie arbeiten ab dem ersten Tag mit echten Anfragen.</p></li>
+    </ul>
+  </div>
+</section>
+
+<section id="naechster-schritt">
+  <div class="wrap">
+    <div class="cta">
+      <div>
+        <p class="eyebrow" style="color:var(--accent)">Nächster Schritt</p>
+        <h2 style="margin-top:8px">Vom Kopf ins System, in drei Schritten</h2>
+        <ol>
+          <li><b>Kick-off</b>: Ein kurzes Gespräch, in dem wir Flotte, Preisregeln und die heutigen Sonderfälle aufnehmen. Kein Workshop, nur die Informationen, die heute im Kopf sind.</li>
+          <li><b>Entwicklung</b>: Wir bauen Stufe 1 auf Basis dieser Angaben und stimmen Zwischenstände mit Ihnen ab.</li>
+          <li><b>Live-Schaltung und Integration in die Website</b>: Das bestehende Anfrageformular wird angebunden, Bexio verknüpft, Mitarbeitende eingeführt. Sie arbeiten ab dem ersten Tag mit echten Anfragen.</li>
+        </ol>
+      </div>
+      <div class="box">
+        <b>Trending Media</b>
+        Kontaktperson: Nicola Sieber, Co-Founder<br>
+        <a href="mailto:nicola.sieber@trendingmedia.ch">nicola.sieber@trendingmedia.ch</a><br>
+        <a href="tel:+41764930208">076 493 02 08</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal-bg" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="m-title">
+  <div class="modal">
+    <div class="mh"><div><h4 id="m-title"></h4><div class="sub" id="m-sub"></div></div><button class="x" id="m-close" aria-label="Schliessen">×</button></div>
+    <div class="mb" id="m-body"></div>
+    <div class="mf"><button class="btn ghost" id="m-demo">In der Demo durchspielen</button><button class="btn" id="m-offer">Offerte öffnen</button></div>
+  </div>
+</div>
+
+<footer><div class="wrap">Konzeptvorschau, erstellt von Trending Media für Midia Tours. Keine fertige Software, alle Zahlen sind Beispielwerte.</div></footer>
+
+<script>
+(function(){
+  // ---- Stammdaten (Beispiel) ----
+  const PLACES = {
+    "Uzwil":[47.437,9.134,"CH"],"St. Gallen":[47.424,9.376,"CH"],"Zürich":[47.377,8.541,"CH"],"Winterthur":[47.499,8.724,"CH"],
+    "Bern":[46.948,7.447,"CH"],"Basel":[47.559,7.588,"CH"],"Luzern":[47.050,8.306,"CH"],"Chur":[46.850,9.532,"CH"],
+    "Lugano":[46.005,8.951,"CH"],"Genf":[46.204,6.143,"CH"],"Lausanne":[46.520,6.633,"CH"],"Interlaken":[46.686,7.863,"CH"],
+    "München":[48.137,11.575,"DE"],"Stuttgart":[48.775,9.183,"DE"],"Konstanz":[47.660,9.175,"DE"],"Innsbruck":[47.269,11.404,"AT"],
+    "Wien":[48.208,16.373,"AT"],"Mailand":[45.464,9.190,"IT"],"Strassburg":[48.573,7.752,"FR"],"Lindau":[47.546,9.684,"DE"],
+    "Europa-Park":[48.268,7.722,"DE","Europa-Park-Strasse 2, 77977 Rust (DE)"],
+    "Flughafen Zürich":[47.458,8.555,"CH","Flughafenstrasse, 8058 Zürich-Flughafen"],
+    "Titlis Engelberg":[46.821,8.401,"CH","Talstation Titlis, 6390 Engelberg"],
+    "Rheinfall":[47.678,8.615,"CH","Rheinfallquai, 8212 Neuhausen am Rheinfall"],
+    "Ballenberg":[46.750,8.076,"CH","Museumsstrasse 100, 3858 Hofstetten bei Brienz"],
+    "Verkehrshaus Luzern":[47.053,8.336,"CH","Lidostrasse 5, 6006 Luzern"],
+    "Säntis Schwebebahn":[47.249,9.339,"CH","Schwägalp, 9107 Urnäsch"],
+    "Oktoberfest München":[48.131,11.550,"DE","Theresienwiese, 80339 München"],
+    "Gardaland":[45.456,10.713,"IT","Via Derna 4, 37014 Castelnuovo del Garda (IT)"],
+    "Allianz Arena":[48.219,11.625,"DE","Werner-Heisenberg-Allee 25, 80939 München"],
+    "Jungfraujoch (Grindelwald Terminal)":[46.624,8.036,"CH","Grundstrasse 54, 3818 Grindelwald"],
+    "Zermatt (Täsch Terminal)":[46.067,7.778,"CH","Matterhorn Terminal, 3929 Täsch"],
+    "Zoo Zürich":[47.385,8.574,"CH","Zürichbergstrasse 221, 8044 Zürich"],
+    "Rigi (Arth-Goldau)":[47.049,8.548,"CH","Bahnhofstrasse, 6410 Goldau"],
+    "Schloss Neuschwanstein":[47.557,10.750,"DE","Neuschwansteinstrasse 20, 87645 Schwangau (DE)"],
+    "Insel Mainau":[47.705,9.195,"DE","Insel Mainau, 78465 Konstanz (DE)"],
+    "Stockalperschloss Brig":[46.316,7.988,"CH","Alte Simplonstrasse 28, 3900 Brig"],
+    "Messe Basel":[47.564,7.601,"CH","Messeplatz 10, 4058 Basel"],
+    "Stadion Letzigrund":[47.382,8.504,"CH","Badenerstrasse 500, 8048 Zürich"],
+    "Schilthorn (Stechelberg)":[46.556,7.900,"CH","Talstation Schilthornbahn, 3824 Stechelberg"]
+  };
+  const CITIES=Object.keys(PLACES).filter(k=>!PLACES[k][3]);
+  const DESTS=Object.keys(PLACES).filter(k=>PLACES[k][3]);
+  const PLACE_KEYS=Object.keys(PLACES);
+  const norm=s=>s.toLowerCase().replace(/[^a-z0-9äöü]/g,"");
+  function resolvePlace(text){
+    const q=norm(text||""); if(!q) return null;
+    let key=PLACE_KEYS.find(k=>norm(k)===q) || PLACE_KEYS.find(k=>norm(k).startsWith(q)) || PLACE_KEYS.find(k=>norm(k).includes(q));
+    return key?{key,...{lat:PLACES[key][0],lon:PLACES[key][1],cc:PLACES[key][2],addr:PLACES[key][3]||null}}:null;
+  }
+  const FLEET = [
+    {id:"s431",name:"Setra S 431 DT",cls:"Doppeldecker",seats:80,feat:["WC","Küche","Grosser Gepäckraum"],day:1400,km:2.9,kind:"dd"},
+    {id:"s517hdh",name:"Setra S 517 HDH",cls:"Reisebus XL",seats:59,feat:["WC","Küche","Bordunterhaltung"],day:1150,km:2.5,kind:"bus"},
+    {id:"s516hd",name:"Setra S 516 HD",cls:"Reisebus XL",seats:59,feat:["WC","Küche"],day:1100,km:2.4,kind:"bus"},
+    {id:"s517hd",name:"Setra S 517 HD",cls:"Reisebus",seats:55,feat:["WC","Küche"],day:1050,km:2.3,kind:"bus"},
+    {id:"s416",name:"Setra S 416 GT-HD/2",cls:"Reisebus",seats:48,feat:["WC","Kühlschrank"],day:980,km:2.2,kind:"bus"},
+    {id:"s515hdh",name:"Setra S 515 HDH",cls:"Reisebus",seats:40,feat:["WC","Küche"],day:950,km:2.2,kind:"bus"},
+    {id:"s511",name:"Setra S 511 HD",cls:"Midibus",seats:36,feat:["WC"],day:880,km:2.0,kind:"bus"},
+    {id:"spm",name:"Sprinter Mobility",cls:"Minibus",seats:21,feat:["Rollstuhl-Lift"],day:650,km:1.4,kind:"mini"},
+    {id:"spt",name:"Sprinter Travel",cls:"Minibus",seats:15,feat:["Klima","Ledersitze"],day:600,km:1.3,kind:"mini"},
+    {id:"sp319",name:"Sprinter 319",cls:"Minibus",seats:7,feat:["Klima"],day:520,km:1.1,kind:"mini"},
+    {id:"vkl",name:"Mercedes V-Klasse",cls:"VIP",seats:6,feat:["Leder","VIP"],day:560,km:1.2,kind:"vip"}
+  ];
+  const RATES = {nightDriver:180, abroad:120, secondDriver:450, vat:0.081, avgSpeed:72};
+
+  const $ = s=>document.querySelector(s);
+  const el = id=>document.getElementById(id);
+  const chf = n=>"CHF "+Math.round(n).toLocaleString("de-CH").replace(/,/g,"'");
+  const fmtDate = s=>{ if(!s) return "–"; const d=new Date(s+"T00:00:00"); return d.toLocaleDateString("de-CH",{weekday:"short",day:"2-digit",month:"2-digit",year:"numeric"}); };
+  const hhmm = h=>{const H=Math.floor(h),M=Math.round((h-H)*60);return H+" h "+(M<10?"0":"")+M+" min";};
+
+  // Orte füllen
+  const fromSel=el("f-from"), toSel=el("f-to");
+  function attachDropdown(inputEl,listEl,items){
+    let hl=-1;
+    const render=()=>{
+      const q=norm(inputEl.value); const hits=items.filter(k=>!q||norm(k).includes(q));
+      listEl.innerHTML=hits.length?hits.map(k=>`<li data-v="${k}">${k}${PLACES[k][3]?`<small>${PLACES[k][3]}</small>`:""}</li>`).join(""):'<li class="none">Kein Treffer, in der echten Lösung via Adresssuche</li>';
+      hl=-1; listEl.hidden=false;
+    };
+    inputEl.addEventListener("focus",render);
+    inputEl.addEventListener("input",render);
+    inputEl.addEventListener("blur",()=>setTimeout(()=>{listEl.hidden=true;},120));
+    inputEl.addEventListener("keydown",e=>{
+      const lis=[...listEl.querySelectorAll("li[data-v]")]; if(!lis.length) return;
+      if(e.key==="ArrowDown"){e.preventDefault();hl=(hl+1)%lis.length;}
+      else if(e.key==="ArrowUp"){e.preventDefault();hl=(hl-1+lis.length)%lis.length;}
+      else if(e.key==="Enter"&&hl>=0){e.preventDefault();lis[hl].dispatchEvent(new Event("mousedown"));return;}
+      else if(e.key==="Escape"){listEl.hidden=true;return;}
+      else return;
+      lis.forEach((li,i)=>li.classList.toggle("hl",i===hl));
+    });
+    listEl.addEventListener("mousedown",e=>{
+      const li=e.target.closest("li[data-v]"); if(!li) return; e.preventDefault();
+      inputEl.value=li.dataset.v; listEl.hidden=true; inputEl.dispatchEvent(new Event("input",{bubbles:true}));
+    });
+  }
+  attachDropdown(fromSel,el("from-dd"),CITIES);
+  attachDropdown(toSel,el("to-dd"),DESTS);
+  const DEFAULT_FROM=resolvePlace("Bern"), DEFAULT_TO=resolvePlace("Europa-Park");
+  let lastFrom=DEFAULT_FROM, lastTo=DEFAULT_TO;
+  function placeOf(inputEl,hintId,fallback,allowed){
+    const r=resolvePlace(inputEl.value);
+    const hint=el(hintId);
+    if(r&&allowed.includes(r.key)){hint.innerHTML=r.addr?`Erkannt: ${r.addr}`:`Erkannt: ${r.key} (${r.cc})`;hint.style.color="var(--ok)";return r;}
+    if(inputEl.value.trim()){hint.innerHTML=`Nicht erkannt, in der echten Lösung via Adresssuche (z.B. Google Places)`;hint.style.color="var(--warn)";}
+    else{hint.innerHTML="";}
+    return fallback;
+  }
+
+  function haversine(a,b){const R=6371,toR=x=>x*Math.PI/180;const dLat=toR(b[0]-a[0]),dLon=toR(b[1]-a[1]);const s=Math.sin(dLat/2)**2+Math.cos(toR(a[0]))*Math.cos(toR(b[0]))*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.sqrt(s));}
+
+  let selectedIds=[]; // Fahrzeug-IDs, bei grossen Gruppen mehrere
+  const MAX_SEATS=Math.max(...FLEET.map(v=>v.seats));
+  function selectedVehicles(){ return selectedIds.map(id=>FLEET.find(v=>v.id===id)).filter(Boolean); }
+  function comboOptions(d){
+    const wish=el("f-wish").value;
+    const models=FLEET.filter(v=>v.kind!=="vip"&&v.seats>=15&&!(d.km1>250&&v.kind==="mini"));
+    const kMin=Math.ceil(d.pax/MAX_SEATS), out=[];
+    for(let k=kMin;k<=Math.min(kMin+1,6);k++){
+      const rec=(start,left,acc)=>{
+        if(left===0){const seats=acc.reduce((a,v)=>a+v.seats,0);if(seats>=d.pax)out.push({vs:[...acc],seats});return;}
+        for(let i=start;i<models.length;i++){acc.push(models[i]);rec(i,left-1,acc);acc.pop();}
+      };
+      rec(0,k,[]);
+    }
+    out.forEach(c=>{
+      c.excess=c.seats-d.pax; c.count=c.vs.length;
+      c.wishOk=!wish||c.vs.every(v=>matchesWish(v,wish));
+      c.score=c.count*1000+c.excess+(c.wishOk?0:5000)+(d.wantsWC&&c.vs.some(v=>!v.feat.includes("WC"))?300:0);
+    });
+    out.sort((a,b)=>a.score-b.score);
+    // Duplikate (gleiche Modellzusammensetzung) entfernen
+    const seen=new Set(); return out.filter(c=>{const key=c.vs.map(v=>v.id).sort().join("+");if(seen.has(key))return false;seen.add(key);return true;}).slice(0,4);
+  }
+  function groupUnits(vs){const m=new Map();vs.forEach(v=>m.set(v.id,(m.get(v.id)||0)+1));return [...m.entries()].map(([id,n])=>({v:FLEET.find(x=>x.id===id),n}));}
+  function readForm(){
+    const pax=Math.max(1,parseInt(el("f-pax").value||"0",10));
+    lastFrom=placeOf(fromSel,"from-hint",lastFrom,CITIES); lastTo=placeOf(toSel,"to-hint",lastTo,DESTS);
+    const fromP=lastFrom,toP=lastTo; const from=fromP.key,to=toP.key;
+    const fromOk=!!fromSel.value.trim()&&resolvePlace(fromSel.value)?.key===from;
+    const toOk=!!toSel.value.trim()&&resolvePlace(toSel.value)?.key===to;
+    const unresolved=!fromOk||!toOk;
+    const nights=parseInt(el("f-return").value,10);
+    const km1=Math.round(haversine([fromP.lat,fromP.lon],[toP.lat,toP.lon])*1.3);
+    const kmTotal=km1*2;
+    const drive1=km1/RATES.avgSpeed; // Stunden eine Richtung
+    const days=nights+1;
+    const abroad=toP.cc!=="CH"||fromP.cc!=="CH";
+    // Lenkzeit pro Tag: bei Tagesfahrt hin und zurück am selben Tag
+    const drivePerDay = nights===0 ? drive1*2 : drive1;
+    const secondDriver = drivePerDay>(RATES.driveLimit||9);
+    const notes=el("f-notes").value;
+    const wantsWC=/wc|toilette/i.test(notes);
+    return {pax,from,to,toAddr:toP.addr,unresolved,nights,days,km1,kmTotal,drive1,drivePerDay,secondDriver,abroad,wantsWC,
+      name:el("f-name").value,contact:el("f-contact").value,date:el("f-date").value,time:el("f-time").value,rettime:el("f-rettime").value,source:el("f-source").value,notes,
+      adjust:parseFloat(el("f-adjust").value||"0")};
+  }
+
+  const WISH_LABEL={vip:"VIP-Ausstattung",dd:"Doppeldecker",wc:"mit WC",lift:"rollstuhlgerecht",mini:"Minibus"};
+  function matchesWish(v,wish){
+    if(!wish) return true;
+    if(wish==="vip") return v.kind==="vip"||v.feat.includes("VIP");
+    if(wish==="dd") return v.kind==="dd";
+    if(wish==="wc") return v.feat.includes("WC");
+    if(wish==="lift") return v.feat.includes("Rollstuhl-Lift");
+    if(wish==="mini") return v.kind==="mini";
+    return v.id===wish; // bestimmtes Fahrzeug
+  }
+  function rankVehicles(d){
+    const wish=el("f-wish").value;
+    return FLEET.map(v=>{
+      let status,label,score;
+      if(v.seats<d.pax){status="bad";label="Zu klein";score=1000+ (d.pax-v.seats);}
+      else if(v.seats-d.pax<=14){status="ok";label="Passend";score=v.seats-d.pax;}
+      else{status="warn";label="Überkapazität";score=100+(v.seats-d.pax);}
+      if(status!=="bad" && d.wantsWC && !v.feat.includes("WC")){status="warn";label="Kein WC";score+=50;}
+      if(status!=="bad" && d.km1>250 && v.kind==="mini"){status="warn";label="Langstrecke";score+=40;}
+      if(wish && status!=="bad"){
+        if(matchesWish(v,wish)){score-=200;if(status==="warn"&&label==="Überkapazität"){status="ok";label="Wunsch";}}
+        else{status="warn";label="Nicht gewünscht";score+=300;}
+      }
+      if(wish && status==="bad" && matchesWish(v,wish)){label="Wunsch, zu klein";}
+      return {...v,status,label,score,wishMatch:matchesWish(v,wish)};
+    }).sort((a,b)=>a.score-b.score);
+  }
+
+  function vehicleSvg(kind){
+    if(kind==="dd") return '<svg viewBox="0 0 52 34"><rect x="2" y="3" width="46" height="24" rx="4" fill="var(--navy)"/><rect x="6" y="7" width="38" height="6" rx="1" fill="var(--surface)"/><rect x="6" y="16" width="38" height="6" rx="1" fill="var(--surface)"/><circle cx="12" cy="29" r="4" fill="var(--ink)"/><circle cx="40" cy="29" r="4" fill="var(--ink)"/></svg>';
+    if(kind==="mini"||kind==="vip") return '<svg viewBox="0 0 52 34"><path d="M8 12 Q10 6 18 6 H44 a4 4 0 0 1 4 4 V25 H4 V16 Z" fill="var(--navy)"/><rect x="20" y="9" width="24" height="7" rx="1" fill="var(--surface)"/><circle cx="14" cy="27" r="4" fill="var(--ink)"/><circle cx="40" cy="27" r="4" fill="var(--ink)"/></svg>';
+    return '<svg viewBox="0 0 52 34"><rect x="2" y="7" width="48" height="20" rx="4" fill="var(--navy)"/><rect x="6" y="11" width="40" height="7" rx="1" fill="var(--surface)"/><circle cx="12" cy="29" r="4" fill="var(--ink)"/><circle cx="40" cy="29" r="4" fill="var(--ink)"/></svg>';
+  }
+
+  function renderLive(){
+    const d=readForm();
+    el("live-kv").innerHTML=`
+      <dt>Strecke</dt><dd>${d.unresolved?'<span class="muted">Abfahrtsort und Ziel wählen, dann erscheinen Distanz und Fahrzeit</span>':`${d.from} → ${d.to}${d.toAddr?" ("+d.toAddr+")":""}, ca. <span class="mono">${d.km1} km</span> einfach`}</dd>
+      <dt>Fahrzeit</dt><dd>${d.unresolved?"–":"ca. "+hhmm(d.drive1)+" pro Richtung"}</dd>
+      <dt>Dauer</dt><dd>${d.days} ${d.days===1?"Tag":"Tage"}${d.nights?", "+d.nights+" Übernachtung"+(d.nights>1?"en":""):""}</dd>
+      <dt>Ausland</dt><dd>${d.unresolved?"–":d.abroad?"Ja, Maut und Vignette prüfen":"Nein"}</dd>
+      <dt>Fahrzeugwunsch</dt><dd>${el("f-wish").value?(WISH_LABEL[el("f-wish").value]||FLEET.find(v=>v.id===el("f-wish").value)?.name):"keiner, System schlägt vor"}${el("f-wish-note").value.trim()?", Spezialwunsch: "+el("f-wish-note").value.trim():""}</dd>
+      <dt>Fahrzeugklasse</dt><dd>${d.pax>59?"Doppeldecker":d.pax>36?"Reisebus":d.pax>7?"Minibus / Midibus":"Minibus / VIP"}</dd>`;
+    const miss=[];
+    if(!fromSel.value.trim()) miss.push({t:"Abfahrtsort",w:1});
+    else if(resolvePlace(fromSel.value)?.key!==d.from) miss.push({t:"Abfahrtsort nicht erkannt",w:1});
+    if(!toSel.value.trim()) miss.push({t:"Zielort",w:1});
+    else if(resolvePlace(toSel.value)?.key!==d.to) miss.push({t:"Zielort nicht erkannt",w:1});
+    if(!d.rettime) miss.push({t:"Abfahrtszeit Rückfahrt",w:1});
+    if(!/\d/.test(d.contact)) miss.push({t:"Telefonnummer",w:1});
+    if(!el("f-billing").value.trim()) miss.push({t:"Rechnungsadresse",w:1});
+    if(d.nights>0 && !el("f-hotel").value) miss.push({t:"Fahrer-Übernachtung: wer organisiert?",w:1});
+    if(d.nights>0 && el("f-hotel").value==="none") miss.push({t:"Übernachtung 'Keine' bei Mehrtagesfahrt prüfen",w:1});
+    el("missing").innerHTML=miss.length?miss.map(m=>`<span class="chip ${m.w?"warn":""}">${m.t}</span>`).join(""):'<span class="chip ok">Alles erfasst</span>';
+  }
+
+  function renderVehicles(){
+    const d=readForm();
+    el("v-pax").textContent=d.pax;
+    if(d.pax>MAX_SEATS){ renderCombos(d); return; }
+    const list=rankVehicles(d);
+    if(selectedIds.length!==1 || list.find(v=>v.id===selectedIds[0])?.status==="bad") selectedIds=list[0].status!=="bad"?[list[0].id]:[];
+    const selectedId=selectedIds[0];
+    el("vehicles").innerHTML=list.map((v,i)=>`
+      <div class="veh ${v.id===selectedId?"selected":""} ${v.status==="bad"?"dim":""}" tabindex="0" data-id="${v.id}" role="button" aria-pressed="${v.id===selectedId}">
+        <div class="ico">${vehicleSvg(v.kind)}</div>
+        <div><b>${v.name} ${i===0&&v.status!=="bad"?'<span class="tag accent">Empfohlen</span>':""}</b><div class="meta">${v.cls} · ${v.feat.join(", ")}</div></div>
+        <div class="cap"><div class="n mono">${v.seats}</div><div class="l">Sitzplätze</div><span class="tag ${v.status}">${v.label}</span></div>
+      </div>`).join("");
+    const top=list[0];
+    const wish=el("f-wish").value; const wishNote=el("f-wish-note").value.trim();
+    const wishTxt=wish?(WISH_LABEL[wish]||FLEET.find(v=>v.id===wish)?.name):"";
+    const why=[
+      wish?(top.wishMatch&&top.status!=="bad"?`Fahrzeugwunsch "${wishTxt}": passende Fahrzeuge werden zuerst gelistet.`:`Fahrzeugwunsch "${wishTxt}" passt nicht zu ${d.pax} Personen. Das System zeigt den Konflikt, der Mitarbeiter klärt ihn mit dem Kunden.`):`Kein Fahrzeugwunsch: das System wählt frei nach Personenzahl und Strecke.`,
+      `${d.pax} Personen: Fahrzeuge unter ${d.pax} Plätzen werden ausgegraut.`,
+      `Kleinstes passendes Fahrzeug zuerst, damit keine unnötig grosse Klasse offeriert wird.`,
+      d.wantsWC?`In den Bemerkungen steht "WC": Fahrzeuge ohne WC werden markiert.`:`Ausstattungswünsche aus den Bemerkungen (z.B. WC) fliessen in die Reihenfolge ein.`,
+      d.km1>250?`Strecke über 250 km: Minibusse werden für Langstrecke zurückgestuft.`:`Kurze Strecke: alle Fahrzeugklassen gleichwertig.`,
+      `Ausgewählt: ${FLEET.find(v=>v.id===selectedId)?.name||"–"}. Der Mitarbeiter kann jederzeit ein anderes Fahrzeug wählen.`
+    ];
+    if(d.pax>59) why.push(`Ab ${MAX_SEATS+1} Personen schlägt das System automatisch eine Kombination aus mehreren Fahrzeugen vor.`);
+    if(wishNote) why.push(`Spezialwunsch "${wishNote}": wird als Position in Kalkulation und Offerte vorgemerkt, Preis vom Mitarbeiter zu ergänzen.`);
+    el("why-list").innerHTML=why.map(w=>`<li>${w}</li>`).join("");
+    document.querySelectorAll(".veh").forEach(n=>{
+      const pick=()=>{ if(n.classList.contains("dim")) return; selectedIds=[n.dataset.id]; renderVehicles(); };
+      n.addEventListener("click",pick); n.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pick();}});
+    });
+  }
+
+  function renderCombos(d){
+    const combos=comboOptions(d);
+    const keys=combos.map(c=>c.vs.map(v=>v.id).sort().join("+"));
+    const curKey=[...selectedIds].sort().join("+");
+    if(!keys.includes(curKey)) selectedIds=combos[0]?combos[0].vs.map(v=>v.id):[];
+    const sel=[...selectedIds].sort().join("+");
+    el("vehicles").innerHTML=combos.map((c,i)=>{
+      const key=c.vs.map(v=>v.id).sort().join("+");
+      const units=groupUnits(c.vs);
+      return `<div class="veh ${key===sel?"selected":""}" tabindex="0" data-key="${key}" data-ids="${c.vs.map(v=>v.id).join(",")}" role="button" aria-pressed="${key===sel}" style="grid-template-columns:auto 1fr auto">
+        <div class="ico">${vehicleSvg(c.vs[0].kind)}</div>
+        <div><b>${units.map(u=>u.n+"× "+u.v.name).join(" + ")} ${i===0?'<span class="tag accent">Empfohlen</span>':""}</b>
+          <div class="meta">${c.count} Fahrzeuge · ${units.map(u=>u.v.cls).filter((x,i,a)=>a.indexOf(x)===i).join(", ")}${c.wishOk?"":" · entspricht nicht dem Fahrzeugwunsch"}</div></div>
+        <div class="cap"><div class="n mono">${c.seats}</div><div class="l">Sitzplätze</div><span class="tag ${c.excess<=20?"ok":"warn"}">${c.excess} frei</span></div>
+      </div>`;
+    }).join("");
+    el("why-list").innerHTML=[
+      `${d.pax} Personen übersteigen das grösste Fahrzeug (${MAX_SEATS} Plätze): das System kombiniert automatisch mehrere Busse.`,
+      `Sortierung: möglichst wenige Fahrzeuge, dann möglichst wenig Leerplätze.`,
+      `Jedes Fahrzeug wird in der Kalkulation einzeln gerechnet (Tagespauschale, Kilometer, Fahrer, Übernachtung).`,
+      `Der Mitarbeiter kann eine andere Kombination wählen oder im echten Tool einzelne Fahrzeuge tauschen.`
+    ].map(w=>`<li>${w}</li>`).join("");
+    document.querySelectorAll(".veh").forEach(n=>{
+      const pick=()=>{ selectedIds=n.dataset.ids.split(","); renderVehicles(); };
+      n.addEventListener("click",pick); n.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pick();}});
+    });
+  }
+
+  function calc(){
+    const d=readForm();
+    if(!selectedIds.length){ if(d.pax>MAX_SEATS) selectedIds=(comboOptions(d)[0]||{vs:[]}).vs.map(v=>v.id); else selectedIds=[(rankVehicles(d).find(v=>v.status!=="bad")||FLEET[0]).id]; }
+    const vs=selectedVehicles(); const units=groupUnits(vs); const nVeh=vs.length; const v=vs[0];
+    const rows=[];
+    units.forEach(u=>{
+      const pre=u.n>1?`${u.n}× `:"";
+      rows.push({t:`Tagespauschale ${pre}${u.v.name}`,why:`${u.n>1?u.n+" × ":""}${d.days} Tage × ${chf(u.v.day)}`,a:u.v.day*d.days*u.n});
+      rows.push({t:`Kilometer ${pre}${u.v.name}`,why:`${u.n>1?u.n+" × ":""}${d.kmTotal} km × CHF ${u.v.km.toFixed(2)} (hin und zurück)`,a:d.kmTotal*u.v.km*u.n});
+    });
+    const mult=nVeh>1?`${nVeh} Fahrzeuge × `:"";
+    if(d.nights>0 && !["kunde","none"].includes(el("f-hotel").value)) rows.push({t:"Fahrer-Übernachtung",why:`${mult}${d.nights} × ${chf(RATES.nightDriver)}, Ruhezeit auswärts`,a:RATES.nightDriver*d.nights*nVeh});
+    if(d.secondDriver) rows.push({t:"Zweitfahrer",why:`${mult}Lenkzeit ${hhmm(d.drivePerDay)} pro Tag, über ${RATES.driveLimit||9} h`,a:RATES.secondDriver*d.days*nVeh});
+    if(d.abroad) rows.push({t:"Auslandszuschlag",why:`${mult}Maut, Vignette, Fahrerspesen`,a:RATES.abroad*d.days*nVeh});
+    const wishNote=el("f-wish-note").value.trim();
+    if(wishNote) rows.push({t:"Spezialwunsch: "+wishNote,why:"Preis vom Mitarbeiter zu ergänzen",a:0,txt:"offen"});
+    const net=rows.reduce((s,r)=>s+r.a,0)+d.adjust;
+    const vat=net*RATES.vat;
+    const seats=vs.reduce((a,x)=>a+x.seats,0);
+    const label=units.map(u=>(u.n>1?u.n+"× ":"")+u.v.name).join(" + ");
+    const feats=[...new Set(vs.flatMap(x=>x.feat))].join(", ");
+    return {d,v,vs,units,nVeh,seats,label,feats,rows,net,vat,gross:net+vat};
+  }
+
+  function renderCalc(){
+    const c=calc();
+    el("calc").innerHTML=`<tr><th>Position</th><th>Betrag</th></tr>`+
+      c.rows.map(r=>`<tr><td>${r.t}<span class="why">${r.why}</span></td><td class="mono">${r.txt||chf(r.a)}</td></tr>`).join("")+
+      (c.d.adjust?`<tr><td>Manuelle Anpassung<span class="why">durch Mitarbeiter</span></td><td class="mono">${chf(c.d.adjust)}</td></tr>`:"")+
+      `<tr class="sub"><td>Netto</td><td class="mono">${chf(c.net)}</td></tr>
+       <tr class="sub"><td>MwSt ${(RATES.vat*100).toFixed(1)} %</td><td class="mono">${chf(c.vat)}</td></tr>
+       <tr class="total"><td>Preisvorschlag inkl. MwSt</td><td class="mono">${chf(c.gross)}</td></tr>`;
+    el("trip-kv").innerHTML=`
+      <dt>${c.nVeh>1?"Fahrzeuge":"Fahrzeug"}</dt><dd>${c.label}, ${c.seats} Plätze</dd>
+      <dt>Auslastung</dt><dd><span class="mono">${Math.round(c.d.pax/c.seats*100)} %</span> (${c.d.pax} von ${c.seats})</dd>
+      <dt>Strecke total</dt><dd><span class="mono">${c.d.kmTotal} km</span></dd>
+      <dt>Lenkzeit</dt><dd>${hhmm(c.d.drivePerDay)} pro Tag</dd>
+      <dt>Einsatztage</dt><dd>${c.d.days}</dd>
+      <dt>Preis pro Person</dt><dd><span class="mono">${chf(c.gross/c.d.pax)}</span></dd>`;
+    const rc=el("rest-card");
+    if(c.d.secondDriver){rc.style.borderColor="var(--warn)";el("rest-text").innerHTML=`<span class="tag warn">Achtung</span> Lenkzeit über ${RATES.driveLimit||9} Stunden pro Tag. Das System schlägt einen Zweitfahrer vor und rechnet ihn ein. Alternative: Zwischenübernachtung.`;}
+    else{rc.style.borderColor="var(--line)";el("rest-text").innerHTML=`<span class="tag ok">Im Rahmen</span> ${hhmm(c.d.drivePerDay)} Lenkzeit pro Tag, mit Pausen unter der ${RATES.driveLimit||9}-Stunden-Grenze. ${c.d.nights?"Übernachtung "+(c.nVeh>1?"der Fahrer":"des Fahrers")+" ist eingerechnet.":(c.nVeh>1?"Ein Fahrer pro Fahrzeug genügt.":"Ein Fahrer genügt.")}`;}
+  }
+
+  let offerState="draft";
+  function renderOffer(){
+    const c=calc(); const d=c.d;
+    const nr="OF-2026-"+String(1042+d.pax).slice(-4);
+    el("doc").innerHTML=`
+      <div class="dochead"><div class="logo">MIDIA TOURS<small>Bahnhofstrasse 81 · 9240 Uzwil · +41 71 955 04 08</small></div>
+        <div class="addr">${d.name}<br>${d.contact}<br><br>Offerte ${nr}<br>Uzwil, ${new Date().toLocaleDateString("de-CH")}</div></div>
+      <h3>Offerte Busreise ${d.from} – ${d.to}</h3>
+      <p>Vielen Dank für Ihre Anfrage. Gerne offerieren wir Ihnen die gewünschte Fahrt wie folgt:</p>
+      <div class="meta">
+        <div><b>Hinfahrt</b> ${fmtDate(d.date)}, ${d.time||"–"} Uhr ab ${d.from}</div>
+        <div><b>Rückfahrt</b> ${d.nights?fmtDate(addDays(d.date,d.nights)):fmtDate(d.date)}${d.rettime?", "+d.rettime+" Uhr":""} ab ${d.to}</div>
+        ${d.toAddr?`<div style="grid-column:1/-1"><b>Zieladresse</b> ${d.toAddr}</div>`:""}
+        <div><b>${c.nVeh>1?"Fahrzeuge":"Fahrzeug"}</b> ${c.label}, ${c.seats} Sitzplätze, ${c.feats}</div>
+        <div><b>Personen</b> ${d.pax}</div>
+      </div>
+      <table><tr><th>Leistung</th><th>CHF</th></tr>
+        ${c.rows.map(r=>`<tr><td>${r.t}<br><span style="color:#4A5568;font-size:12px">${r.why}</span></td><td>${r.txt?"nach Absprache":chf(r.a).replace("CHF ","")}</td></tr>`).join("")}
+        ${d.adjust?`<tr><td>Anpassung</td><td>${chf(d.adjust).replace("CHF ","")}</td></tr>`:""}
+        <tr><td>Netto</td><td>${chf(c.net).replace("CHF ","")}</td></tr>
+        <tr><td>MwSt ${(RATES.vat*100).toFixed(1)} %</td><td>${chf(c.vat).replace("CHF ","")}</td></tr>
+        <tr class="total"><td>Total inkl. MwSt</td><td>${chf(c.gross).replace("CHF ","")}</td></tr></table>
+      ${d.notes?`<p style="margin-top:12px"><b>Bemerkungen:</b> ${d.notes}</p>`:""}
+      <p class="foot">Inbegriffen: Fahrer, Treibstoff, Versicherung. Nicht inbegriffen: Parkgebühren, Verpflegung. Gültig 30 Tage. Bestätigen Sie die Offerte direkt über den Link in der E-Mail oder telefonisch.</p>
+      ${offerState==="confirmed"?'<span class="stamp">Bestätigt vom Kunden</span>':offerState==="sent"?'<span class="stamp" style="border-color:#1B2F5C;color:#1B2F5C">Gesendet</span>':""}`;
+    document.querySelectorAll("#offer-status .st").forEach(s=>{
+      const order=["draft","approved","sent","confirmed"]; const i=order.indexOf(s.dataset.s), cur=order.indexOf(offerState);
+      s.classList.toggle("on",i<cur); s.classList.toggle("now",i===cur);
+    });
+    el("btn-approve").disabled=offerState!=="draft";
+    el("btn-confirm").disabled=offerState!=="sent";
+    el("btn-approve").textContent=offerState==="draft"?"Offerte freigeben und senden":"Gesendet";
+  }
+  function addDays(s,n){const d=new Date(s+"T00:00:00");d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);}
+
+  function renderOrder(){
+    const c=calc(); const d=c.d; const confirmed=offerState==="confirmed";
+    el("order-tag").textContent=confirmed?"bestätigt":"Offerte offen";
+    el("order-tag").className="tag "+(confirmed?"ok":"warn");
+    el("order-kv").innerHTML=`
+      <dt>Auftrag</dt><dd>AU-2026-${String(2210+d.pax)}</dd>
+      <dt>Kunde</dt><dd>${d.name}</dd>
+      <dt>Fahrt</dt><dd>${d.from} → ${d.to}, ${fmtDate(d.date)}</dd>
+      <dt>${c.nVeh>1?"Fahrzeuge":"Fahrzeug"}</dt><dd>${c.label}</dd>
+      <dt>Fahrer</dt><dd>${c.nVeh>1?c.nVeh+" Fahrer, ":""}<span class="tag">Stufe 2: zuweisen</span></dd>
+      <dt>Total</dt><dd class="mono">${chf(c.gross)}</dd>`;
+    const items=[
+      ["Kontakt anlegen oder aktualisieren",d.name,"ok"],
+      ["Auftrag erstellen","Fahrt "+d.from+" – "+d.to,"ok"],
+      ["Positionen übertragen",c.rows.length+" Positionen, Netto "+chf(c.net),"ok"],
+      ["Rechnung vorbereiten","Entwurf, Freigabe in Bexio",confirmed?"ok":"warn"],
+      ["Zahlungseingang zurückmelden","Status im Dispo-Assistenten","later"]
+    ];
+    el("bexio-list").innerHTML=items.map(([t,s,st])=>`<li><span>${t}<br><span class="small muted">${s}</span></span><span class="tag ${st==="later"?"":st}">${st==="ok"?"übertragen":st==="warn"?"wartet":"optional"}</span></li>`).join("");
+  }
+
+  // ---- Navigation ----
+  let maxDone=1;
+  function go(n){
+    n=+n;
+    document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",+p.dataset.pane===n));
+    maxDone=Math.max(maxDone,n);
+    document.querySelectorAll("#stepper button").forEach(b=>{const s=+b.dataset.step;b.classList.toggle("active",s===n);b.classList.toggle("done",s<maxDone&&s!==n);});
+    if(n===1) renderLive();
+    if(n===2) renderVehicles();
+    if(n===3) renderCalc();
+    if(n===4) renderOffer();
+    if(n===5) renderOrder();
+    const top=document.getElementById("demo").getBoundingClientRect().top;
+    if(top< -40) document.querySelector(".app").scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go)));
+  document.querySelectorAll("#stepper button").forEach(b=>b.addEventListener("click",()=>go(b.dataset.step)));
+  el("f-return").addEventListener("change",()=>{ if(el("f-return").value==="0") el("f-hotel").value="none"; else if(el("f-hotel").value==="none") el("f-hotel").value=""; });
+  el("intake").addEventListener("input",()=>{renderLive();});
+  el("f-adjust").addEventListener("input",renderCalc);
+  el("btn-approve").addEventListener("click",()=>{offerState="sent";renderOffer();});
+  el("btn-confirm").addEventListener("click",()=>{offerState="confirmed";renderOffer();});
+  // Änderungen an der Anfrage setzen die Offerte zurück
+  el("intake").addEventListener("input",()=>{offerState="draft";});
+
+  // ---- Adminbereich ----
+  document.querySelectorAll(".admin .side button").forEach(b=>b.addEventListener("click",()=>{
+    document.querySelectorAll(".admin .side button").forEach(x=>x.classList.toggle("active",x===b));
+    document.querySelectorAll(".admin .apane").forEach(p=>p.classList.toggle("active",p.dataset.apane===b.dataset.apane));
+  }));
+  function renderFleetTable(){
+    el("fleet-table").innerHTML=`<tr><th>Modell</th><th>Klasse</th><th>Plätze</th><th>Ausstattung</th><th>Tagespauschale</th><th>CHF / km</th><th>Status</th></tr>`+
+      FLEET.map((v,i)=>`<tr><td><b>${v.name}</b></td><td>${v.cls}</td><td class="num">${v.seats}</td><td>${v.feat.join(", ")}</td>
+        <td class="num"><input type="number" step="10" value="${v.day}" data-fleet="${i}" data-field="day" aria-label="Tagespauschale ${v.name}"></td>
+        <td class="num"><input type="number" step="0.1" value="${v.km}" data-fleet="${i}" data-field="km" aria-label="Kilometersatz ${v.name}"></td>
+        <td><span class="st-pill bestaetigt">aktiv</span></td></tr>`).join("");
+    el("fleet-table").querySelectorAll("input").forEach(inp=>inp.addEventListener("input",()=>{
+      const v=FLEET[+inp.dataset.fleet]; const n=parseFloat(inp.value); if(!isNaN(n)) v[inp.dataset.field]=n;
+    }));
+  }
+  function renderRules(){
+    const defs=[
+      ["nightDriver","Fahrer-Übernachtung","CHF pro Nacht und Fahrer",1],
+      ["secondDriver","Zweitfahrer","CHF pro Tag, wenn Lenkzeit über der Grenze",1],
+      ["abroad","Auslandszuschlag","CHF pro Tag und Fahrzeug (Maut, Vignette, Spesen)",1],
+      ["driveLimit","Lenkzeitgrenze","Stunden pro Tag, darüber Zweitfahrer oder Zwischenübernachtung",1],
+      ["avgSpeed","Planungsgeschwindigkeit","km/h für die Fahrzeitschätzung (echte Lösung: Routing)",1],
+      ["vatPct","Mehrwertsteuer","Prozent",1]
+    ];
+    RATES.driveLimit=RATES.driveLimit||9; RATES.vatPct=Math.round(RATES.vat*1000)/10;
+    el("rules").innerHTML=defs.map(([k,t,sub])=>`<div class="rule-row"><div><b>${t}</b><span>${sub}</span></div><input type="number" step="${k==="vatPct"?"0.1":"1"}" value="${RATES[k]}" data-rate="${k}" aria-label="${t}"></div>`).join("");
+    el("rules").querySelectorAll("input").forEach(inp=>inp.addEventListener("input",()=>{
+      const n=parseFloat(inp.value); if(isNaN(n)) return; RATES[inp.dataset.rate]=n; if(inp.dataset.rate==="vatPct") RATES.vat=n/100;
+    }));
+  }
+  renderFleetTable(); renderRules();
+  // Zeile in der Übersicht öffnet die Zusammenfassung
+  const modal=el("modal"); let modalReq=null, modalTr=null;
+  function closeModal(){modal.hidden=true;}
+  el("m-close").addEventListener("click",closeModal);
+  modal.addEventListener("click",e=>{if(e.target===modal)closeModal();});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!modal.hidden)closeModal();});
+  function loadIntoDemo(r){
+    el("f-name").value=r.name; el("f-contact").value=r.contact; el("f-pax").value=r.pax;
+    fromSel.value=r.from_; toSel.value=r.to; el("f-date").value=r.date; el("f-time").value=r.time;
+    el("f-return").value=String(r.ret); el("f-hotel").value=r.ret===0?"none":""; el("f-source").value=r.source;
+    el("f-notes").value=r.notes; el("f-wish").value=r.wish; el("f-wish-note").value=""; el("f-adjust").value="0";
+    selectedIds=[]; offerState="draft";
+    document.querySelector('#demo .app-bar .note').textContent="Geladen aus Übersicht: "+r.nr;
+  }
+  el("m-demo").addEventListener("click",()=>{loadIntoDemo(modalReq);closeModal();go(1);document.querySelector("#demo .app").scrollIntoView({behavior:"smooth",block:"start"});});
+  el("m-offer").addEventListener("click",()=>{loadIntoDemo(modalReq);closeModal();go(2);go(3);go(4);document.querySelector("#demo .app").scrollIntoView({behavior:"smooth",block:"start"});});
+  function openModal(tr){
+    const r=JSON.parse(tr.dataset.req); const tds=tr.querySelectorAll("td");
+    r.nr=tds[0].textContent; const veh=tds[5].textContent, price=tds[6].textContent, status=tds[8].textContent.trim(), stCls=tds[8].querySelector(".st-pill").className;
+    modalReq=r; modalTr=tr;
+    const fp=resolvePlace(r.from_), tp=resolvePlace(r.to);
+    const km=Math.round(haversine([fp.lat,fp.lon],[tp.lat,tp.lon])*1.3), drive=km/RATES.avgSpeed;
+    const abroad=tp.cc!=="CH"||fp.cc!=="CH"; const days=r.ret+1;
+    const retDate=r.ret?fmtDate(addDays(r.date,r.ret)):fmtDate(r.date);
+    const miss=[]; if(status==="Neu"){miss.push("Abfahrtszeit Rückfahrt","Rechnungsadresse"); if(r.ret>0) miss.push("Fahrer-Übernachtung: wer organisiert?");}
+    const stage={ "Neu":0,"Offerte offen":1,"Gesendet":2,"Bestätigt":3 }[status]??0;
+    const steps=[["Anfrage eingegangen",r.source+", "+(status==="Neu"?"heute":"vor "+(stage+1)+" Tagen")],["Fahrzeug- und Preisvorschlag erstellt","automatisch, "+veh],["Offerte freigegeben und gesendet",status==="Gesendet"||status==="Bestätigt"?"per E-Mail mit Bestätigungslink":"wartet auf Freigabe"],["Kunde hat bestätigt",status==="Bestätigt"?"per Link":"offen"],["Auftrag und Rechnung in Bexio",status==="Bestätigt"?"übergeben":"folgt nach Bestätigung"]];
+    el("m-title").textContent=r.nr+" · "+r.name;
+    el("m-sub").innerHTML=`<span class="${stCls}">${status}</span> &nbsp; Quelle: ${r.source} &nbsp;·&nbsp; ${r.pax} Personen &nbsp;·&nbsp; ${fmtDate(r.date)}`;
+    el("m-body").innerHTML=`
+      <div class="card tint"><h4>Fahrt</h4><dl class="kv">
+        <dt>Von</dt><dd>${r.from_}</dd>
+        <dt>Nach</dt><dd>${r.to}${tp.addr?"<br><span class='small muted'>"+tp.addr+"</span>":""}</dd>
+        <dt>Hinfahrt</dt><dd>${fmtDate(r.date)}, ${r.time} Uhr</dd>
+        <dt>Rückfahrt</dt><dd>${retDate}${r.ret?" ("+r.ret+" Übernachtung"+(r.ret>1?"en":"")+")":", gleicher Tag"}</dd>
+        <dt>Strecke</dt><dd>ca. <span class="mono">${km} km</span> einfach, ${hhmm(drive)} Fahrzeit</dd>
+        <dt>Ausland</dt><dd>${abroad?"Ja, Maut und Vignette":"Nein"}</dd>
+      </dl></div>
+      <div class="card tint"><h4>Kunde</h4><dl class="kv">
+        <dt>Firma</dt><dd>${r.name}</dd>
+        <dt>Kontakt</dt><dd>${r.contact}</dd>
+        <dt>Personen</dt><dd>${r.pax}</dd>
+        <dt>Wunsch</dt><dd>${r.wish?(WISH_LABEL[r.wish]||r.wish):"keiner"}</dd>
+        <dt>Bemerkung</dt><dd>${r.notes}</dd>
+      </dl></div>
+      <div class="card"><h4>Vorschlag des Systems <span class="tag accent">automatisch</span></h4><dl class="kv">
+        <dt>Fahrzeug</dt><dd>${veh}</dd>
+        <dt>Einsatztage</dt><dd>${days}</dd>
+        <dt>Preis</dt><dd class="mono">CHF ${price} inkl. MwSt</dd>
+        <dt>Pro Person</dt><dd class="mono">CHF ${Math.round(parseInt(price.replace(/\D/g,""),10)/r.pax)}</dd>
+      </dl>${miss.length?`<p class="eyebrow" style="margin:12px 0 6px">Fehlende Angaben</p><div class="chips">${miss.map(m=>`<span class="chip warn">${m}</span>`).join("")}</div>`:""}</div>
+      <div class="card"><h4>Verlauf</h4><ul class="timeline">${steps.map((st,i)=>`<li class="${i<=stage?"":i===stage+1?"next":"later"}"><i></i><div>${st[0]}<span>${st[1]}</span></div></li>`).join("")}</ul></div>`;
+    el("m-offer").textContent=status==="Neu"||status==="Offerte offen"?"Offerte prüfen und freigeben":"Offerte ansehen";
+    modal.hidden=false; el("m-close").focus();
+  }
+  document.querySelectorAll("tr.row[data-req]").forEach(tr=>{
+    tr.setAttribute("tabindex","0");
+    tr.addEventListener("click",()=>openModal(tr)); tr.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();openModal(tr);}});
+  });
+  // Disposition (Stufe 2)
+  (function renderDispo(){
+    const days=["Mo 14.","Di 15.","Mi 16.","Do 17.","Fr 18.","Sa 19.","So 20."]; const todayIdx=-1;
+    const plan=[
+      ["Setra S 431 DT (1)",[null,null,{t:"ok",l:"Pfarrei Niederuzwil → Einsiedeln"},null,null,{t:"ok",l:"Bühler AG → Säntis"},null]],
+      ["Setra S 431 DT (2)",[null,null,null,{t:"wart",l:"Service, Werkstatt"},{t:"wart",l:"Service, Werkstatt"},{t:"ok",l:"Bühler AG → Säntis"},null]],
+      ["Setra S 517 HDH",[null,null,null,null,null,{t:"res",l:"Chor Cantabile → München"},null]],
+      ["Setra S 517 HD",[{t:"ok",l:"Gemeinde Oberbüren → Ballenberg"},null,null,null,null,null,null]],
+      ["Setra S 416 GT-HD/2",[null,null,null,null,null,null,null]],
+      ["Setra S 515 HDH",[null,{t:"ok",l:"Schule Flawil → Zoo Zürich"},null,null,null,null,{t:"res",l:"Seniorenrat Wil → Mainau"}]],
+      ["Sprinter Travel",[{t:"ok",l:"Hotel Uzwil → Flughafen"},{t:"ok",l:"Hotel Uzwil → Flughafen"},null,{t:"ok",l:"Hotel Uzwil → Flughafen"},null,null,null]]
+    ];
+    el("dispo-table").innerHTML=`<tr><th>Fahrzeug</th>${days.map((d,i)=>`<th class="${i===todayIdx?"today":""}">${d}</th>`).join("")}</tr>`+
+      plan.map(([v,cells])=>`<tr><td><b>${v}</b></td>${cells.map((c,i)=>`<td class="day ${i===todayIdx?"today":""}">${c?`<span class="blk ${c.t}">${c.l}</span>`:'<span class="free" title="frei"></span>'}</td>`).join("")}</tr>`).join("");
+  })();
+
+  // ---- Rechner ----
+  function roi(){
+    const req=+el("r-req").value, now=+el("r-now").value, neu=+el("r-new").value, rate=+el("r-rate").value;
+    el("r-req-o").textContent=req; el("r-now-o").textContent=now+" min"; el("r-new-o").textContent=neu+" min"; el("r-rate-o").textContent="CHF "+rate;
+    const savedMin=Math.max(0,now-neu)*req*4.33; const hM=savedMin/60, hY=hM*12;
+    el("r-hours").textContent=Math.round(hM)+" Stunden";
+    el("r-hours-y").textContent=Math.round(hY)+" h";
+    el("r-chf").textContent=chf(hY*rate);
+    el("r-cost-now").textContent=chf(now/60*rate); el("r-cost-new").textContent=chf(neu/60*rate);
+  }
+  ["r-req","r-now","r-new","r-rate"].forEach(id=>el(id).addEventListener("input",roi)); roi();
+
+  renderLive();
+})();
+</script>
+</body></html>
